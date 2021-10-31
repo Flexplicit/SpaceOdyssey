@@ -56,7 +56,6 @@ namespace DAL.App.EF.Repositories
 
         public async Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to)
         {
-            
             var query = CreateQuery(true);
             var travelPrices = await QueryTravelData(query);
 
@@ -87,9 +86,24 @@ namespace DAL.App.EF.Repositories
                 planetRouteDict.TryGetValue(to, out var vertexTo))
             {
                 var optimizedArcData = graph.GetArcDepthFirstSearch(vertexFrom, vertexTo);
-                var optimizedLegRouteData = optimizedArcData.Select(GraphComponentMapper.MapDataFromArcs);
-                var travelData = new TravelData();
-                
+                var optimizedLegRouteData = optimizedArcData.Select(GraphComponentMapper.MapDataFromArcs).ToList();
+                var travelDataList = new List<TravelData>();
+
+
+                // foreach (var legRoutes in optimizedLegRouteData)
+                // {
+                //     foreach (var leg in legRoutes)
+                //     {
+                //         leg.
+                //     }
+                // }
+                // optimizedLegRouteData.ForEach(routeLeg =>
+                // {
+                //     travelDataList.Add(new TravelData()
+                //     {
+                //         routeLeg
+                //     });
+                // });
             }
 
 

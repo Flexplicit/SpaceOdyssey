@@ -107,7 +107,28 @@ namespace Graph
             return null;
         }
 
+        /// <summary>
+        /// Finds the shortest path between 2 nodes in a graph.
+        /// 
+        ///  Requirements:
+        ///  1. Graph arc's must have positive weight.
+        ///  2. Solutions is made for a DAMG(Directed Acyclic Multigraph), might work differently on others graph variations.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        public void DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
+        {
+            var originVertex = GetVertexById(@from.Id);
+            if (originVertex != null)
+            {
+                AddVertexToFirst(originVertex);
+            }
+            const int infinity = int.MaxValue / 4; // Should be big enough
+            var start = _first;
+        }
 
+
+        //TODO: Dijkstra might be a better solution
         public List<List<Arc<TVertex, TArc>>> GetArcDepthFirstSearch(Vertex<TVertex, TArc> from,
             Vertex<TVertex, TArc> to)
         {
