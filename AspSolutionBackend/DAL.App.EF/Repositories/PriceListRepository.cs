@@ -6,14 +6,13 @@ using App.Domain.TravelModels;
 using App.Domain.TravelModels.Enums;
 using Contracts.DAL.App.Repositories;
 using DAL.Base.EF.Repositories;
+// using Dijkstra.NET.Graph;
+// using Dijkstra.NET.ShortestPath;
 using Graph;
 using Graph.GraphModels;
 using Microsoft.EntityFrameworkCore;
 using PublicApiDTO.TravelModels.v1;
 using Services.ApiServices;
-using Utils;
-using Planet = App.Domain.TravelModels.Planet;
-using RouteInfo = App.Domain.TravelModels.RouteInfo;
 
 namespace DAL.App.EF.Repositories
 {
@@ -60,12 +59,13 @@ namespace DAL.App.EF.Repositories
             var travelPrices = await QueryTravelData(query);
 
 
-            var graph = new Graph<EPlanet, Legs>("travelGraph");
-            var routeInfos = travelPrices.Legs!;
+            var graph = new Graph<EPlanet, Legs>("");
+
+            // var graph = new Graph<EPlanet, Legs>("travelGraph");
             var planetRouteDict = new Dictionary<EPlanet, Vertex<EPlanet, Legs>>();
 
 
-            foreach (var leg in routeInfos)
+            foreach (var leg in travelPrices.Legs!)
             {
                 if (!planetRouteDict.TryGetValue(leg.RouteInfo.From.Name, out var fromVertex))
                 {
@@ -79,31 +79,18 @@ namespace DAL.App.EF.Repositories
                     planetRouteDict.Add(leg.RouteInfo.To.Name, toVertex);
                 }
 
-                graph.CreateArc($"{fromVertex.Id}-{toVertex.Id}", fromVertex, toVertex, leg);
+                leg.Providers!.ForEach(provider =>
+                    graph.CreateArc($"{fromVertex.Id}-{toVertex.Id}", fromVertex, toVertex, leg,
+                        (long?)provider.Price));
             }
 
             if (planetRouteDict.TryGetValue(from, out var vertexFrom) &&
                 planetRouteDict.TryGetValue(to, out var vertexTo))
             {
+                graph.DijkstraPath(vertexFrom, vertexTo);
                 var optimizedArcData = graph.GetArcDepthFirstSearch(vertexFrom, vertexTo);
                 var optimizedLegRouteData = optimizedArcData.Select(GraphComponentMapper.MapDataFromArcs).ToList();
                 var travelDataList = new List<TravelData>();
-
-
-                // foreach (var legRoutes in optimizedLegRouteData)
-                // {
-                //     foreach (var leg in legRoutes)
-                //     {
-                //         leg.
-                //     }
-                // }
-                // optimizedLegRouteData.ForEach(routeLeg =>
-                // {
-                //     travelDataList.Add(new TravelData()
-                //     {
-                //         routeLeg
-                //     });
-                // });
             }
 
 

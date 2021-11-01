@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Graph.GraphModels;
+using Priority_Queue;
 using Utils;
+using static System.Int32;
 
 namespace Graph
 {
@@ -72,7 +74,7 @@ namespace Graph
         //     var nodes = new List<Vertex<TVertex, TArc>>();
         //     while (current != null)
         //     {
-        //         if (current.First?.Target?.Id == vertex.Id)
+        //         if (current.AdjacentArcs?.Target?.Id == vertex.Id)
         //         {
         //             nodes.Add(current);
         //         }
@@ -84,13 +86,46 @@ namespace Graph
         // }
 
         public Arc<TVertex, TArc> CreateArc(string vId, Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
-            TArc? arcData)
+            TArc? arcData, long? arcWeight)
         {
-            var res = new Arc<TVertex, TArc>(vId, arcData, to);
+            var res = new Arc<TVertex, TArc>(vId, arcData, to, arcWeight);
             _arcCount++;
-            res.Next = from.First;
+            res.Next = from.GetLatestArc();
             res.Target = to;
-            from.First = res;
+            from.AdjacentArcs.Add(res);
+            return res;
+        }
+
+        private int[,] CreateAdjMatrix()
+        {
+            if (_first == null)
+            {
+                throw new Exception("Cannot create AdjMatrix on an empty graph");
+            }
+
+            var info = 0;
+            var v = _first;
+            while (v != null)
+            {
+                v.Info = info++;
+                v = v.Next!;
+            }
+
+            int[,] res = new int[info, info];
+            v = _first;
+            while (v != null)
+            {
+                var i = v.Info;
+                using var a = v.AdjacentArcs.GetEnumerator();
+                while (a.MoveNext())
+                {
+                    var j = a.Current.Target!.Info;
+                    res[i, j]++;
+                }
+
+                v = v.Next;
+            }
+
             return res;
         }
 
@@ -107,6 +142,33 @@ namespace Graph
             return null;
         }
 
+        private static void DijkstraInitialization(IEnumerable<Vertex<TVertex, TArc>> vertices,
+            Vertex<TVertex, TArc> start)
+        {
+            foreach (var v in vertices)
+            {
+                v.DistanceFromStartVertex = MaxValue / 2;
+                v.VPrev = null;
+            }
+
+            start.DistanceFromStartVertex = 0;
+        }
+
+        private static void DijkstraArcRelaxation(Vertex<TVertex, TArc> u, Vertex<TVertex, TArc> v,
+            Arc<TVertex, TArc> arc)
+        {
+            // u->v 
+            if (v.DistanceFromStartVertex > u.DistanceFromStartVertex + arc.Weight)
+            {
+                v.DistanceFromStartVertex = u.DistanceFromStartVertex + (int)arc.Weight;
+                v.VPrev = u;
+                v.ChosenArc = arc;
+                arc.VPrev = u;
+                /*arc.Target!.Visited = true;*/
+            }
+        }
+
+
         /// <summary>
         /// Finds the shortest path between 2 nodes in a graph.
         /// 
@@ -116,15 +178,110 @@ namespace Graph
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        public void DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
+        ///
+        public List<Vertex<TVertex, TArc>> DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
         {
-            var originVertex = GetVertexById(@from.Id);
-            if (originVertex != null)
+            var vertices = GetAllVertices();
+            DijkstraInitialization(vertices, _first);
+            var result = new List<Vertex<TVertex, TArc>>();
+            var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(_vertexCount);
+            foreach (var ver in vertices)
             {
-                AddVertexToFirst(originVertex);
+                pq.Enqueue(ver, ver.DistanceFromStartVertex);
             }
-            const int infinity = int.MaxValue / 4; // Should be big enough
-            var start = _first;
+
+            while (pq.Count > 0)
+            {
+                var uVertex = pq.Dequeue();
+                result.Add(uVertex);
+                if (uVertex.AdjacentArcs.Count > 0)
+                {
+                    using var uArcs = uVertex.AdjacentArcs.OrderBy(arc => arc.Weight).GetEnumerator();
+                    while (uArcs.MoveNext())
+                    {
+                        var curr = uArcs.Current;
+                        var vVertex = curr.Target!;
+                        DijkstraArcRelaxation(uVertex, vVertex, curr);
+                        pq.UpdatePriority(vVertex, vVertex.DistanceFromStartVertex);
+                    }
+                }
+            }
+
+
+            return result;
+        }
+
+
+        // public void DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
+        // {
+        //     var res = CreateAdjMatrix();
+        //
+        //
+        //     var originVertex = GetVertexById(@from.Id);
+        //     if (originVertex != null)
+        //     {
+        //         AddVertexToFirst(originVertex);
+        //     }
+        //
+        //     if (_first == null) return;
+        //
+        //     var vertices = GetAllVertices();
+        //     var visited = new Vertex<TVertex, TArc>[vertices.Count];
+        //     var unVisited = vertices.ToArray();
+        //
+        //     DijkstraPreparation(vertices);
+        //     var startNode = _first;
+        //
+        //     var curr = 0;
+        //
+        //
+        //     for (var i = 0; i < unVisited.Length; i++)
+        //     {
+        //         var current = unVisited[i];
+        //         using var adjacentArcs = current.AdjacentArcs.GetEnumerator();
+        //
+        //         var fastestArc = adjacentArcs.Current;
+        //         while (adjacentArcs.MoveNext())
+        //         {
+        //             var currentArc = adjacentArcs.Current;
+        //             if (currentArc.Weight < fastestArc.Weight)
+        //             {
+        //                 fastestArc = currentArc;
+        //                 fastestArc.Target!.VPrev = current;
+        //             }
+        //         }
+        //     }
+        //
+        //
+        //     var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(_vertexCount);
+        //
+        //     // Add initial node to queue
+        //     pq.Enqueue(startNode, 0);
+        // }
+
+
+        private void DijkstraPreparation(List<Vertex<TVertex, TArc>> vertices)
+        {
+            InjectVerticesWithInfiniteData(vertices);
+            _first!.DistanceFromStartVertex = 0;
+        }
+
+
+        private static void InjectVerticesWithInfiniteData(List<Vertex<TVertex, TArc>> vertices)
+            => vertices.ForEach(vertex => vertex.DistanceFromStartVertex = MaxValue / 2);
+
+
+        private List<Vertex<TVertex, TArc>> GetAllVertices()
+        {
+            var vertices = new List<Vertex<TVertex, TArc>>(_vertexCount);
+            var curr = _first;
+            while (curr != null)
+            {
+                vertices.Add(curr);
+                curr = curr.Next;
+            }
+
+            return vertices;
         }
 
 
@@ -167,7 +324,7 @@ namespace Graph
 
             from.Visited = true; // current node
 
-            var currentArc = from.First;
+            var currentArc = from.GetLatestArc();
 
             while (currentArc != null)
             {
