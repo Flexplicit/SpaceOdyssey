@@ -87,7 +87,8 @@ namespace DAL.App.EF.Repositories
             if (planetRouteDict.TryGetValue(from, out var vertexFrom) &&
                 planetRouteDict.TryGetValue(to, out var vertexTo))
             {
-                graph.DijkstraPath(vertexFrom, vertexTo);
+                graph.YensKShortestPathFinder(vertexFrom, vertexTo);
+                // graph.DijkstraPath(vertexFrom, vertexTo);
                 var optimizedArcData = graph.GetArcDepthFirstSearch(vertexFrom, vertexTo);
                 var optimizedLegRouteData = optimizedArcData.Select(GraphComponentMapper.MapDataFromArcs).ToList();
                 var travelDataList = new List<TravelData>();

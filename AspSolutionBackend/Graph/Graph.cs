@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Graph.GraphModels;
 using Priority_Queue;
@@ -148,6 +149,7 @@ namespace Graph
             foreach (var v in vertices)
             {
                 v.DistanceFromStartVertex = MaxValue / 2;
+                v.ChosenArc = null;
                 v.VPrev = null;
             }
 
@@ -164,8 +166,69 @@ namespace Graph
                 v.VPrev = u;
                 v.ChosenArc = arc;
                 arc.VPrev = u;
-                /*arc.Target!.Visited = true;*/
             }
+        }
+
+        //O(kn^3)
+        // limit should be as LOW AS POSSIBLE!
+        public List<List<Arc<TVertex, TArc>>> YensKShortestPathFinder(Vertex<TVertex, TArc> from,
+            Vertex<TVertex, TArc> to, int limit = 5)
+        {
+            if (_first == null || limit < 1)
+            {
+                throw new Exception("An empty graph or negative limit occured");
+            }
+
+            var permanentShortestPaths = new List<List<Arc<TVertex, TArc>>>(); // A list
+            var shortestPath1 = DijkstraPath(from, to);
+            permanentShortestPaths.Add(shortestPath1);
+            var candidatePaths = new List<List<Arc<TVertex, TArc>>>(); // B list
+
+
+            for (var k = 1; k < limit; k++)
+            {
+                var latestPath = permanentShortestPaths[k - 1];
+                // We substitute each arc with a newer one and then compare the results and pick the best one
+                foreach (var arc in latestPath)
+                {
+                    // we temporary remove chosen arc then run dijkstra again
+                    arc.IsConnectedToGraph = false;
+                    var candidateRes = DijkstraPath(from, to);
+
+                    if (candidateRes.Count < 0) continue;
+
+                    // We restore removed arcs and add result to temporary path list.
+                    arc.IsConnectedToGraph = true;
+                    candidatePaths.Add(candidateRes);
+                }
+
+                // We compare and pick the minWeighed path
+                var candidatePathMinWeightIndex = GetMinIndexValue(candidatePaths);
+                permanentShortestPaths.Add(candidatePaths[candidatePathMinWeightIndex]);
+                candidatePaths.RemoveRange(0, candidatePaths.Count);
+            }
+
+            return permanentShortestPaths;
+        }
+
+        private static int GetMinIndexValue(IEnumerable<List<Arc<TVertex, TArc>>> candidatePaths)
+        {
+            var minIndex = 0;
+            long minWeight = 0;
+            foreach (var minCurrentPath in candidatePaths.Select(path => path.Min(x => x.Weight)))
+            {
+                if (minIndex == 0)
+                {
+                    minWeight = minCurrentPath;
+                    minIndex++;
+                    continue;
+                }
+
+                minWeight = minCurrentPath < minWeight ? minCurrentPath : minWeight;
+                minIndex++;
+            }
+
+            return minIndex - 1;
         }
 
 
@@ -175,15 +238,20 @@ namespace Graph
         ///  Requirements:
         ///  1. Graph arc's must have positive weight.
         ///  2. Solutions is made for a DAMG(Directed Acyclic Multigraph), might work differently on others graph variations.
+        ///
+        ///  * Complexity O(n^2), where n = |V|
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
         ///
-        public List<Vertex<TVertex, TArc>> DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
+        public List<Arc<TVertex, TArc>> DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
         {
             var vertices = GetAllVertices();
-            DijkstraInitialization(vertices, _first);
+            DijkstraInitialization(vertices, from);
+
+            // DijkstraInitialization(vertices, _first);
             var result = new List<Vertex<TVertex, TArc>>();
+
             var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(_vertexCount);
             foreach (var ver in vertices)
             {
@@ -200,6 +268,8 @@ namespace Graph
                     while (uArcs.MoveNext())
                     {
                         var curr = uArcs.Current;
+                        if (!curr.IsConnectedToGraph) continue;
+
                         var vVertex = curr.Target!;
                         DijkstraArcRelaxation(uVertex, vVertex, curr);
                         pq.UpdatePriority(vVertex, vVertex.DistanceFromStartVertex);
@@ -207,57 +277,72 @@ namespace Graph
                 }
             }
 
+            return extractPathsFromResult(from, to);
+        }
 
-            return result;
+        private List<Arc<TVertex, TArc>> extractPathsFromResult(Vertex<TVertex, TArc> @from, Vertex<TVertex, TArc> to)
+        {
+            var arcs = new List<Arc<TVertex, TArc>>();
+
+            var current = to;
+            while (current != null)
+            {
+                if (current.VPrev?.ChosenArc == null) break;
+                arcs.Add(current.VPrev!.ChosenArc!);
+                current = current.VPrev;
+            }
+
+            arcs.Reverse();
+            return arcs;
         }
 
 
-        // public void DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
-        // {
-        //     var res = CreateAdjMatrix();
-        //
-        //
-        //     var originVertex = GetVertexById(@from.Id);
-        //     if (originVertex != null)
-        //     {
-        //         AddVertexToFirst(originVertex);
-        //     }
-        //
-        //     if (_first == null) return;
-        //
-        //     var vertices = GetAllVertices();
-        //     var visited = new Vertex<TVertex, TArc>[vertices.Count];
-        //     var unVisited = vertices.ToArray();
-        //
-        //     DijkstraPreparation(vertices);
-        //     var startNode = _first;
-        //
-        //     var curr = 0;
-        //
-        //
-        //     for (var i = 0; i < unVisited.Length; i++)
-        //     {
-        //         var current = unVisited[i];
-        //         using var adjacentArcs = current.AdjacentArcs.GetEnumerator();
-        //
-        //         var fastestArc = adjacentArcs.Current;
-        //         while (adjacentArcs.MoveNext())
-        //         {
-        //             var currentArc = adjacentArcs.Current;
-        //             if (currentArc.Weight < fastestArc.Weight)
-        //             {
-        //                 fastestArc = currentArc;
-        //                 fastestArc.Target!.VPrev = current;
-        //             }
-        //         }
-        //     }
-        //
-        //
-        //     var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(_vertexCount);
-        //
-        //     // Add initial node to queue
-        //     pq.Enqueue(startNode, 0);
-        // }
+// public void DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
+// {
+//     var res = CreateAdjMatrix();
+//
+//
+//     var originVertex = GetVertexById(@from.Id);
+//     if (originVertex != null)
+//     {
+//         AddVertexToFirst(originVertex);
+//     }
+//
+//     if (_first == null) return;
+//
+//     var vertices = GetAllVertices();
+//     var visited = new Vertex<TVertex, TArc>[vertices.Count];
+//     var unVisited = vertices.ToArray();
+//
+//     DijkstraPreparation(vertices);
+//     var startNode = _first;
+//
+//     var curr = 0;
+//
+//
+//     for (var i = 0; i < unVisited.Length; i++)
+//     {
+//         var current = unVisited[i];
+//         using var adjacentArcs = current.AdjacentArcs.GetEnumerator();
+//
+//         var fastestArc = adjacentArcs.Current;
+//         while (adjacentArcs.MoveNext())
+//         {
+//             var currentArc = adjacentArcs.Current;
+//             if (currentArc.Weight < fastestArc.Weight)
+//             {
+//                 fastestArc = currentArc;
+//                 fastestArc.Target!.VPrev = current;
+//             }
+//         }
+//     }
+//
+//
+//     var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(_vertexCount);
+//
+//     // Add initial node to queue
+//     pq.Enqueue(startNode, 0);
+// }
 
 
         private void DijkstraPreparation(List<Vertex<TVertex, TArc>> vertices)
@@ -285,7 +370,7 @@ namespace Graph
         }
 
 
-        //TODO: Dijkstra might be a better solution
+//TODO: Dijkstra might be a better solution
         public List<List<Arc<TVertex, TArc>>> GetArcDepthFirstSearch(Vertex<TVertex, TArc> from,
             Vertex<TVertex, TArc> to)
         {

@@ -21,6 +21,8 @@
         public Vertex<TVertex, TArc>? VPrev { get; set; }
         
         public bool Checked { get; set; } = false;
+
+        public bool IsConnectedToGraph { get; set; } = true;    
         public Vertex<TVertex, TArc>? Target { get; set; }
         public Arc<TVertex, TArc>? Next { get; set; }
     }
