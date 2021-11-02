@@ -29,6 +29,7 @@ namespace DAL.Base.EF.Repositories
     {
         protected readonly TDbContext RepoDbContext;
         protected readonly DbSet<TDomainEntity> RepoDbSet;
+        // protected readonly IBaseMapper<TDalEntity, TDomainEntity> Mapper;
 
         public BaseRepository(TDbContext ctx)
         {

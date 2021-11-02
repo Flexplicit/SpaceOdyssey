@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using App.Domain.TravelDataDTO;
 using App.Domain.TravelModels;
 using App.Domain.TravelModels.Enums;
 using Contracts.DAL.Base.Repositories;
-using PublicApiDTO.TravelModels.v1;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface ITravelPricesRepository : IBaseRepository<TravelPrices>, ICustomTravelPricesRepository
+    public interface ITravelPricesRepository : IBaseRepository<TravelPrices>
+        // , ICustomTravelPricesRepository
     {
         Task<TravelPrices> GetLatestTravelPriceAsync();
     }
 
-    public interface ICustomTravelPricesRepository
+    public interface ICustomTravelPricesRepository : ITravelPricesRepository
     {
         Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to);
     }

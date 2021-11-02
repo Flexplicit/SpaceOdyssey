@@ -9,7 +9,7 @@ namespace Contracts.DAL.App
     public interface IAppUnitOfWork : IBaseUnitOfWork
     {
         IReservationRepository Reservations { get; }
-        ITravelPricesRepository TravelPrices { get; }
+        ICustomTravelPricesRepository TravelPrices { get; }
 
         // ICustomTravelDataRepository TravelData { get; }
     }
