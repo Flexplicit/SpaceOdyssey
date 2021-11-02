@@ -13,6 +13,7 @@ using Graph.GraphModels;
 using Microsoft.EntityFrameworkCore;
 using PublicApiDTO.TravelModels.v1;
 using Services.ApiServices;
+using DomainDTO = App.Domain.TravelModels;
 
 namespace DAL.App.EF.Repositories
 {
@@ -59,10 +60,9 @@ namespace DAL.App.EF.Repositories
             var travelPrices = await QueryTravelData(query);
 
 
-            var graph = new Graph<EPlanet, Legs>("");
+            var graph = new Graph<EPlanet, DomainDTO.Provider>("");
 
-            // var graph = new Graph<EPlanet, Legs>("travelGraph");
-            var planetRouteDict = new Dictionary<EPlanet, Vertex<EPlanet, Legs>>();
+            var planetRouteDict = new Dictionary<EPlanet, Vertex<EPlanet, DomainDTO.Provider>>();
 
 
             foreach (var leg in travelPrices.Legs!)
@@ -84,18 +84,36 @@ namespace DAL.App.EF.Repositories
                         (long?)provider.Price));
             }
 
-            if (planetRouteDict.TryGetValue(from, out var vertexFrom) &&
-                planetRouteDict.TryGetValue(to, out var vertexTo))
-            {
-                graph.YensKShortestPathFinder(vertexFrom, vertexTo);
-                // graph.DijkstraPath(vertexFrom, vertexTo);
-                var optimizedArcData = graph.GetArcDepthFirstSearch(vertexFrom, vertexTo);
-                var optimizedLegRouteData = optimizedArcData.Select(GraphComponentMapper.MapDataFromArcs).ToList();
-                var travelDataList = new List<TravelData>();
-            }
+            if (!planetRouteDict.TryGetValue(@from, out var vertexFrom) ||
+                !planetRouteDict.TryGetValue(to, out var vertexTo)) return new List<TravelData>();
+            
+            var optimizedArcData = graph.YensKShortestPathFinder(vertexFrom, vertexTo);
+            var optimizedLegRouteData = optimizedArcData.Select(GraphComponentMapper.MapDataFromArcs).ToList();
+            // var travelDataList = new List<TravelData>(
+            //     optimizedLegRouteData.Select(path => new TravelData()
+            //     {
+            //         Routes = path.Select(provider => new RouteInfoProvider()
+            //         {
+            //             Distance = provider!.Legs.RouteInfo.Distance,
+            //             From = provider.Legs.RouteInfo.From,
+            //             To = provider.Legs.RouteInfo.To,
+            //             Provider = provider
+            //         }),
+            //         TotalDistanceInKilometers = path.Sum(provider => provider!.Legs.RouteInfo.Distance),
+            //         TotalLengthInHours = path.Sum(provider =>
+            //             CalculateHoursBetweenDates(provider!.FlightStart, provider.FlightEnd)),
+            //         TotalPrice = path.Sum(provider => provider!.Price),
+            //         ValidUntil = travelPrices.ValidUntil
+            //     }).ToList()
+            // );
+            return travelDataList;
 
 
-            return new List<TravelData>();
+        }
+
+        private static double CalculateHoursBetweenDates(DateTime start, DateTime end)
+        {
+            return (end - start).TotalHours;
         }
 
         private static async Task<TravelPrices> QueryTravelData(IQueryable<TravelPrices> query)
