@@ -14,11 +14,9 @@ namespace App.Domain.TravelModels
         public double TotalQuotedPrice { get; set; }
         public int TotalQuotedTravelTimeInMinutes { get; set; }
 
-        public List<RouteInfo> Routes { get; set; } = null!;
-        public List<Company> TransportationCompanyNames { get; set; } = null!;
+        public List<RouteInfoData> RouteInfoData { get; set; } = null!;
 
-        //TODO:
-        // Might be better to just give the reference instead of loading the whole damn database into memory for verifications.
         public TravelPrices? TravelPrice { get; set; }
+        public Guid TravelPricesId { get; set; }
     }
 }

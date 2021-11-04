@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211028121854_initial")]
+    [Migration("20211104151334_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,12 +126,12 @@ namespace DAL.App.EF.Migrations
                     b.Property<int>("TotalQuotedTravelTimeInMinutes")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TravelPriceId")
+                    b.Property<Guid>("TravelPricesId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TravelPriceId");
+                    b.HasIndex("TravelPricesId");
 
                     b.ToTable("Reservations");
                 });
@@ -165,6 +165,32 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("RouteInfos");
                 });
 
+            modelBuilder.Entity("App.Domain.TravelModels.RouteInfoData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProviderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReservationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RouteInfoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("ReservationId");
+
+                    b.HasIndex("RouteInfoId");
+
+                    b.ToTable("RouteInfoData");
+                });
+
             modelBuilder.Entity("App.Domain.TravelModels.TravelPrices", b =>
                 {
                     b.Property<Guid>("Id")
@@ -182,7 +208,7 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("App.Domain.TravelModels.Company", b =>
                 {
                     b.HasOne("App.Domain.TravelModels.Reservation", "Reservation")
-                        .WithMany("TransportationCompanyNames")
+                        .WithMany()
                         .HasForeignKey("ReservationId");
 
                     b.Navigation("Reservation");
@@ -230,7 +256,9 @@ namespace DAL.App.EF.Migrations
                 {
                     b.HasOne("App.Domain.TravelModels.TravelPrices", "TravelPrice")
                         .WithMany()
-                        .HasForeignKey("TravelPriceId");
+                        .HasForeignKey("TravelPricesId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("TravelPrice");
                 });
@@ -244,7 +272,7 @@ namespace DAL.App.EF.Migrations
                         .IsRequired();
 
                     b.HasOne("App.Domain.TravelModels.Reservation", "Reservation")
-                        .WithMany("Routes")
+                        .WithMany()
                         .HasForeignKey("ReservationId");
 
                     b.HasOne("App.Domain.TravelModels.Planet", "To")
@@ -260,16 +288,47 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("To");
                 });
 
+            modelBuilder.Entity("App.Domain.TravelModels.RouteInfoData", b =>
+                {
+                    b.HasOne("App.Domain.TravelModels.Provider", "Provider")
+                        .WithMany("RouteInfoData")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.TravelModels.Reservation", null)
+                        .WithMany("RouteInfoData")
+                        .HasForeignKey("ReservationId");
+
+                    b.HasOne("App.Domain.TravelModels.RouteInfo", "RouteInfo")
+                        .WithMany("RouteInfoData")
+                        .HasForeignKey("RouteInfoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("RouteInfo");
+                });
+
             modelBuilder.Entity("App.Domain.TravelModels.Legs", b =>
                 {
                     b.Navigation("Providers");
                 });
 
+            modelBuilder.Entity("App.Domain.TravelModels.Provider", b =>
+                {
+                    b.Navigation("RouteInfoData");
+                });
+
             modelBuilder.Entity("App.Domain.TravelModels.Reservation", b =>
                 {
-                    b.Navigation("Routes");
+                    b.Navigation("RouteInfoData");
+                });
 
-                    b.Navigation("TransportationCompanyNames");
+            modelBuilder.Entity("App.Domain.TravelModels.RouteInfo", b =>
+                {
+                    b.Navigation("RouteInfoData");
                 });
 
             modelBuilder.Entity("App.Domain.TravelModels.TravelPrices", b =>

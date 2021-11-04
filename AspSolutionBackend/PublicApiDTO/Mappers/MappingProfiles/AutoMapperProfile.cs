@@ -10,6 +10,10 @@ namespace PublicApiDTO.Mappers.MappingProfiles
             CreateMap<PublicApiDTO.TravelModels.v1.Company, App.Domain.TravelModels.Company>().ReverseMap();
             CreateMap<PublicApiDTO.TravelModels.v1.RouteInfo, App.Domain.TravelModels.RouteInfo>().ReverseMap();
             CreateMap<PublicApiDTO.TravelModels.v1.Planet, App.Domain.TravelModels.Planet>().ReverseMap();
+
+
+            CreateMap<PublicApiDTO.TravelModels.v1.TravelData, App.Domain.TravelDataDTO.TravelData>().ReverseMap();
+            
         }
     }
 }

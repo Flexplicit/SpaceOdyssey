@@ -2,11 +2,11 @@
 using AutoMapper;
 using PublicApiDTO.Mappers.MappingProfiles;
 using PublicDto = PublicApiDTO.TravelModels.v1;
-using domainDTO = App.Domain.TravelModels;
+using DomainDTO = App.Domain.TravelModels;
 
 namespace PublicApiDTO.Mappers
 {
-    public class ReservationMapper : BasePublicDtoMapper<PublicDto.Reservation, domainDTO.Reservation>
+    public class ReservationMapper : BasePublicDtoMapper<PublicDto.Reservation, DomainDTO.Reservation>
     {
         public ReservationMapper(IMapper mapper) : base(mapper)
         {

@@ -12,6 +12,8 @@ namespace DAL.App.EF
         }
 
         public virtual DbSet<Reservation> Reservations { get; set; } = null!;
+        public virtual DbSet<RouteInfoData> RouteInfoData { get; set; } = null!;
+
         public virtual DbSet<TravelPrices> TravelPrices { get; set; } = null!;
 
         public virtual DbSet<Planet> Planets { get; set; } = null!;

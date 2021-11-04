@@ -29,7 +29,6 @@ namespace WebApp.ApiControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
         {
-            // return Ok();
             var reservations = await _uow.Reservations.GetAllAsync();
             return Ok(reservations.Select(reservation => _mapper.Map(reservation)));
         }
@@ -53,6 +52,12 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Reservation>> PostReservation(Reservation reservation)
         {
+            if (!await _uow.TravelPrices.IsTravelPriceValid(reservation.TravelPriceId))
+            {
+                return NotFound("Given price list is not valid");
+            }
+            
+
             var result = _uow.Reservations.Add(_mapper.Map(reservation)!);
             await _uow.SaveChangesAsync();
 

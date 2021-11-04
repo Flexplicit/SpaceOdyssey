@@ -40,14 +40,14 @@ namespace DAL.App.EF.Migrations
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalQuotedPrice = table.Column<double>(type: "float", nullable: false),
                     TotalQuotedTravelTimeInMinutes = table.Column<int>(type: "int", nullable: false),
-                    TravelPriceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    TravelPricesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reservations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reservations_TravelPrices_TravelPriceId",
-                        column: x => x.TravelPriceId,
+                        name: "FK_Reservations_TravelPrices_TravelPricesId",
+                        column: x => x.TravelPricesId,
                         principalTable: "TravelPrices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -158,6 +158,38 @@ namespace DAL.App.EF.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RouteInfoData",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RouteInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReservationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RouteInfoData", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RouteInfoData_Providers_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "Providers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RouteInfoData_Reservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "Reservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RouteInfoData_RouteInfos_RouteInfoId",
+                        column: x => x.RouteInfoId,
+                        principalTable: "RouteInfos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Companies_ReservationId",
                 table: "Companies",
@@ -184,9 +216,24 @@ namespace DAL.App.EF.Migrations
                 column: "LegsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_TravelPriceId",
+                name: "IX_Reservations_TravelPricesId",
                 table: "Reservations",
-                column: "TravelPriceId");
+                column: "TravelPricesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RouteInfoData_ProviderId",
+                table: "RouteInfoData",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RouteInfoData_ReservationId",
+                table: "RouteInfoData",
+                column: "ReservationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RouteInfoData_RouteInfoId",
+                table: "RouteInfoData",
+                column: "RouteInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RouteInfos_FromId",
@@ -206,6 +253,9 @@ namespace DAL.App.EF.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "RouteInfoData");
+
             migrationBuilder.DropTable(
                 name: "Providers");
 

@@ -3,7 +3,7 @@ using Domain.Base;
 
 namespace PublicApiDTO.TravelModels.v1
 {
-    public class Provider
+    public class Provider : DomainEntityId
     {
         public double Price { get; set; }
         public DateTime FlightStart { get; set; }

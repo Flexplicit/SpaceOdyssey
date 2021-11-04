@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Contracts.DAL.APP.Repositories;
@@ -13,11 +14,15 @@ namespace DAL.App.EF
         public AppUnitOfWork(AppDbContext uowCtx) : base(uowCtx)
         {
         }
+
         public IReservationRepository Reservations =>
             GetRepository(() => new ReservationRepository(_uowContext));
 
         public ICustomTravelPricesRepository TravelPrices =>
             GetRepository(() => new CustomPriceListRepository(_uowContext));
-    
+
+
+        public IPlanetRepository Planets =>
+            GetRepository(() => new PlanetRepository(_uowContext));
     }
 }

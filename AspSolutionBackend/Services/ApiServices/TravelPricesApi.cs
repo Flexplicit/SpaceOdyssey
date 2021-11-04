@@ -34,8 +34,7 @@ namespace Services.ApiServices
             JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true, };
             return JsonSerializer.Deserialize<T>(responseJson, jsonOptions)!;
             
-            // return (await JsonSerializer.DeserializeAsync<T>(responseJson, new JsonSerializerOptions(new JsonSerializerOptions())))!;
-            // return (await JsonSerializer.DeserializeAsync<T>(responseJson, new JsonSerializerOptions(new JsonSerializerOptions())))!;
+           
         }
     }
 }

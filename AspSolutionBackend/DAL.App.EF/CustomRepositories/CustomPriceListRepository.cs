@@ -44,6 +44,12 @@ namespace DAL.App.EF.CustomRepositories
             return travelDataList;
         }
 
+        public async Task<bool> IsTravelPriceValid(Guid travelPriceId)
+        {
+            var result = await FirstOrDefaultAsync(travelPriceId);
+            return result != null && result.ValidUntil > DateTime.Now;
+        }
+
 
         private static Dictionary<EPlanet, Vertex<EPlanet, Provider>> AddVerticesAndArcsToGraph(
             TravelPrices travelPrices, Graph<EPlanet, Provider> graph)
@@ -69,6 +75,7 @@ namespace DAL.App.EF.CustomRepositories
                     graph.CreateArc($"{fromVertex.Id}-{toVertex.Id}", fromVertex, toVertex, provider,
                         (long?)provider.Price));
             }
+
             return planetRouteDict;
         }
 

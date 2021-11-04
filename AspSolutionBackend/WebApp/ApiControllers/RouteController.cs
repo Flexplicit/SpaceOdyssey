@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using App.Domain.TravelModels.Enums;
 using AutoMapper;
@@ -6,6 +8,9 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using PublicApiDTO.Mappers;
 using PublicApiDTO.TravelModels.v1;
+using PublicDto = PublicApiDTO.TravelModels.v1;
+using DomainDTO = App.Domain.TravelModels;
+
 
 namespace WebApp.ApiControllers
 {
@@ -15,24 +20,26 @@ namespace WebApp.ApiControllers
     public class RouteController : ControllerBase
     {
         private readonly IAppUnitOfWork _uow;
-        private readonly PlanetMapper _mapper;
+        private readonly PlanetMapper _planetMapper;
+        private readonly TravelDataMapper _travelDataMapper;
 
         public RouteController(IMapper mapper, IAppUnitOfWork uow)
         {
-            _mapper = new PlanetMapper(mapper);
+            _planetMapper = new PlanetMapper(mapper);
+            _travelDataMapper = new TravelDataMapper(mapper);
             _uow = uow;
-
         }
 
         [HttpGet("{from}/{to}")]
-        public async Task<ActionResult<TravelData>> GetRouteInfoAccordingToQuery(string from, string to)
+        public async Task<ActionResult<List<PublicDto.TravelData>>> GetRoutesBetweenTwoPlanets(string from, string to)
         {
             var fromPlanet = MapPlanetToEnum(from);
             var toPlanet = MapPlanetToEnum(to);
-        
-        
-            await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet);
-            throw new Exception("not implemented");
+
+            var travelData = await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet);
+            var mappedData = travelData.Select(data => _travelDataMapper.Map(data));
+
+            return Ok(mappedData);
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using App.Domain.TravelDataDTO;
 using App.Domain.TravelModels;
@@ -8,7 +9,6 @@ using Contracts.DAL.Base.Repositories;
 namespace Contracts.DAL.App.Repositories
 {
     public interface ITravelPricesRepository : IBaseRepository<TravelPrices>
-        // , ICustomTravelPricesRepository
     {
         Task<TravelPrices> GetLatestTravelPriceAsync();
     }
@@ -16,5 +16,6 @@ namespace Contracts.DAL.App.Repositories
     public interface ICustomTravelPricesRepository : ITravelPricesRepository
     {
         Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to);
+        Task<bool> IsTravelPriceValid(Guid travelPriceId);
     }
 }

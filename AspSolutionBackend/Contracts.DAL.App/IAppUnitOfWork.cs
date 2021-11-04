@@ -11,6 +11,8 @@ namespace Contracts.DAL.App
         IReservationRepository Reservations { get; }
         ICustomTravelPricesRepository TravelPrices { get; }
 
-        // ICustomTravelDataRepository TravelData { get; }
+        
+        IPlanetRepository Planets { get; }
+
     }
 }

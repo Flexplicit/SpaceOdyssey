@@ -55,63 +55,7 @@ namespace DAL.App.EF.Repositories
             return res;
         }
 
-
-        // public async Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to)
-        // {
-        //     var query = CreateQuery(true);
-        //     var travelPrices = await QueryTravelData(query);
-        //
-        //
-        //     var graph = new Graph<EPlanet, DomainDTO.Provider>("");
-        //
-        //     var planetRouteDict = new Dictionary<EPlanet, Vertex<EPlanet, DomainDTO.Provider>>();
-        //
-        //
-        //     foreach (var leg in travelPrices.Legs!)
-        //     {
-        //         if (!planetRouteDict.TryGetValue(leg.RouteInfo.From.Name, out var fromVertex))
-        //         {
-        //             fromVertex = graph.CreateVertex(leg.RouteInfo.From.Name.ToString(), leg.RouteInfo.From.Name);
-        //             planetRouteDict.Add(leg.RouteInfo.From.Name, fromVertex);
-        //         }
-        //
-        //         if (!planetRouteDict.TryGetValue(leg.RouteInfo.To.Name, out var toVertex))
-        //         {
-        //             toVertex = graph.CreateVertex(leg.RouteInfo.To.Name.ToString(), leg.RouteInfo.To.Name);
-        //             planetRouteDict.Add(leg.RouteInfo.To.Name, toVertex);
-        //         }
-        //
-        //         leg.Providers!.ForEach(provider =>
-        //             graph.CreateArc($"{fromVertex.Id}-{toVertex.Id}", fromVertex, toVertex, leg,
-        //                 (long?)provider.Price));
-        //     }
-        //
-        //     if (!planetRouteDict.TryGetValue(@from, out var vertexFrom) ||
-        //         !planetRouteDict.TryGetValue(to, out var vertexTo)) return new List<TravelData>();
-        //     
-        //     var optimizedArcData = graph.YensKShortestPathFinder(vertexFrom, vertexTo);
-        //     var optimizedLegRouteData = optimizedArcData.Select(GraphComponentMapper.MapDataFromArcs).ToList();
-        //     // var travelDataList = new List<TravelData>(
-        //     //     optimizedLegRouteData.Select(path => new TravelData()
-        //     //     {
-        //     //         Routes = path.Select(provider => new RouteInfoProvider()
-        //     //         {
-        //     //             Distance = provider!.Legs.RouteInfo.Distance,
-        //     //             From = provider.Legs.RouteInfo.From,
-        //     //             To = provider.Legs.RouteInfo.To,
-        //     //             Provider = provider
-        //     //         }),
-        //     //         TotalDistanceInKilometers = path.Sum(provider => provider!.Legs.RouteInfo.Distance),
-        //     //         TotalLengthInHours = path.Sum(provider =>
-        //     //             CalculateHoursBetweenDates(provider!.FlightStart, provider.FlightEnd)),
-        //     //         TotalPrice = path.Sum(provider => provider!.Price),
-        //     //         ValidUntil = travelPrices.ValidUntil
-        //     //     }).ToList()
-        //     // );
-        //     return travelDataList;
-        //
-        //
-        // }
+        
         
 
         protected static async Task<TravelPrices> QueryTravelData(IQueryable<TravelPrices> query)
