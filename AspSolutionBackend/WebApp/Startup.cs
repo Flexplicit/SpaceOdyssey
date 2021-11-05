@@ -54,6 +54,17 @@ namespace WebApp
             services.AddAutoMapper(
                 typeof(PublicApiDTO.Mappers.MappingProfiles.AutoMapperProfile)
             );
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsAllowAll", builder =>
+                    {
+                        builder.AllowAnyHeader();
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyOrigin();
+                    }
+                );
+            });
+
             //Support for api versioning
             services.AddApiVersioning(options => { options.ReportApiVersions = true; });
             //Support for m2m api docs
@@ -84,6 +95,7 @@ namespace WebApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseCors("CorsAllowAll");
             app.UseRouting();
 
             app.UseAuthentication();

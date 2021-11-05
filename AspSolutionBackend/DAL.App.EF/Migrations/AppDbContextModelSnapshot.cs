@@ -172,7 +172,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("ProviderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ReservationId")
+                    b.Property<Guid>("ReservationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("RouteInfoId")
@@ -294,9 +294,11 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("App.Domain.TravelModels.Reservation", null)
+                    b.HasOne("App.Domain.TravelModels.Reservation", "Reservation")
                         .WithMany("RouteInfoData")
-                        .HasForeignKey("ReservationId");
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("App.Domain.TravelModels.RouteInfo", "RouteInfo")
                         .WithMany("RouteInfoData")
@@ -305,6 +307,8 @@ namespace DAL.App.EF.Migrations
                         .IsRequired();
 
                     b.Navigation("Provider");
+
+                    b.Navigation("Reservation");
 
                     b.Navigation("RouteInfo");
                 });

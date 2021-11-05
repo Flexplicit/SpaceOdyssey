@@ -165,7 +165,7 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RouteInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReservationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    ReservationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {

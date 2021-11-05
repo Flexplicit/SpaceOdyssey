@@ -10,5 +10,8 @@ namespace App.Domain.TravelModels
 
         public RouteInfo RouteInfo { get; set; } = null!;
         public Guid RouteInfoId { get; set; }
+
+        public Reservation Reservation { get; set; } = null!;
+        public Guid ReservationId { get; set; }
     }
 }
