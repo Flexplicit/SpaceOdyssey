@@ -33,58 +33,31 @@ namespace Graph
         }
 
 
-        public void AddVertexToFirst(Vertex<TVertex, TArc> vertex)
+        private void AddVertexToFirst(Vertex<TVertex, TArc> vertexToAdd)
         {
             if (_first == null)
             {
-                _first = vertex;
+                _first = vertexToAdd;
                 return;
             }
 
-            vertex.Next = _first;
-            _first = vertex;
-        }
-
-
-        private void DeleteVertexNext(Vertex<TVertex, TArc> vertexStart, Vertex<TVertex, TArc> vertexToDelete)
-        {
-            var curr = vertexStart;
-            while (curr != null)
+            var current = _first;
+            while (current != null)
             {
-                if (curr.Next?.Id == vertexToDelete.Id)
+                if (current.Next == vertexToAdd)
                 {
-                    curr.Next = vertexToDelete.Next;
+                    var tempFirstNextNodes = _first.Next;
+                    var tempVertexToAddNext = vertexToAdd.Next;
+                    current.Next = _first;
+                    vertexToAdd.Next = tempFirstNextNodes;
+                    _first.Next = tempVertexToAddNext;
+                    _first = vertexToAdd;
                     return;
                 }
 
-                curr = curr.Next;
+                current = current.Next;
             }
         }
-        // private bool SwapVertexPositions(Vertex<TVertex, TArc> v1, Vertex<TVertex, TArc> v2)
-        // {
-        //     var v1AdjacentNodes = GetVertexAdjacentNodes(v1);
-        //     foreach (var vertex in v1AdjacentNodes)
-        //     {
-        //         
-        //     }
-        // }
-        //
-        // private List<Vertex<TVertex, TArc>> GetVertexAdjacentNodes(Vertex<TVertex, TArc> vertex)
-        // {
-        //     var current = _first;
-        //     var nodes = new List<Vertex<TVertex, TArc>>();
-        //     while (current != null)
-        //     {
-        //         if (current.AdjacentArcs?.Target?.Id == vertex.Id)
-        //         {
-        //             nodes.Add(current);
-        //         }
-        //
-        //         current = current.Next;
-        //     }
-        //
-        //     return nodes;
-        // }
 
         public Arc<TVertex, TArc> CreateArc(string vId, Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
             TArc? arcData, long? arcWeight)
@@ -143,9 +116,11 @@ namespace Graph
             return null;
         }
 
-        private static void DijkstraInitialization(IEnumerable<Vertex<TVertex, TArc>> vertices,
+        private void DijkstraInitialization(IEnumerable<Vertex<TVertex, TArc>> vertices,
             Vertex<TVertex, TArc> start)
         {
+            AddVertexToFirst(start);
+
             foreach (var v in vertices)
             {
                 v.DistanceFromStartVertex = MaxValue / 2;
@@ -169,7 +144,6 @@ namespace Graph
             }
         }
 
-        //O(kn^3)
         // limit should be as LOW AS POSSIBLE!
         public List<List<Arc<TVertex, TArc>>> YensKShortestPathFinder(Vertex<TVertex, TArc> from,
             Vertex<TVertex, TArc> to, int limit = 5)
@@ -234,16 +208,9 @@ namespace Graph
 
         /// <summary>
         /// Finds the shortest path between 2 nodes in a graph.
-        /// 
-        ///  Requirements:
-        ///  1. Graph arc's must have positive weight.
-        ///  2. Solutions is made for a DAMG(Directed Acyclic Multigraph), might work differently on others graph variations.
-        ///
-        ///  * Complexity O(n^2), where n = |V|
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        ///
+        /// <param name="from">From vertex which will be added as the first vertex.</param>
+        /// <param name="to">To vertex where we will be traveling to.</param>
         public List<Arc<TVertex, TArc>> DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
         {
             var vertices = GetAllVertices();
@@ -285,16 +252,17 @@ namespace Graph
             var arcs = new List<Arc<TVertex, TArc>>();
 
             var current = to;
-            while (current != null)
+            while (current is { VPrev: { } })
             {
-                if (current.VPrev?.ChosenArc == null) break;
-                arcs.Add(current.VPrev!.ChosenArc!);
+                if (current.ChosenArc == null) break;
+                arcs.Add(current.ChosenArc!);
                 current = current.VPrev;
             }
 
             arcs.Reverse();
             return arcs;
         }
+
         private void DijkstraPreparation(List<Vertex<TVertex, TArc>> vertices)
         {
             InjectVerticesWithInfiniteData(vertices);
@@ -320,7 +288,6 @@ namespace Graph
         }
 
 
-//TODO: Dijkstra might be a better solution
         public List<List<Arc<TVertex, TArc>>> GetArcDepthFirstSearch(Vertex<TVertex, TArc> from,
             Vertex<TVertex, TArc> to)
         {
