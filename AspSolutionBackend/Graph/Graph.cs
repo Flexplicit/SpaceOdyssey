@@ -295,56 +295,6 @@ namespace Graph
             arcs.Reverse();
             return arcs;
         }
-
-
-// public void DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
-// {
-//     var res = CreateAdjMatrix();
-//
-//
-//     var originVertex = GetVertexById(@from.Id);
-//     if (originVertex != null)
-//     {
-//         AddVertexToFirst(originVertex);
-//     }
-//
-//     if (_first == null) return;
-//
-//     var vertices = GetAllVertices();
-//     var visited = new Vertex<TVertex, TArc>[vertices.Count];
-//     var unVisited = vertices.ToArray();
-//
-//     DijkstraPreparation(vertices);
-//     var startNode = _first;
-//
-//     var curr = 0;
-//
-//
-//     for (var i = 0; i < unVisited.Length; i++)
-//     {
-//         var current = unVisited[i];
-//         using var adjacentArcs = current.AdjacentArcs.GetEnumerator();
-//
-//         var fastestArc = adjacentArcs.Current;
-//         while (adjacentArcs.MoveNext())
-//         {
-//             var currentArc = adjacentArcs.Current;
-//             if (currentArc.Weight < fastestArc.Weight)
-//             {
-//                 fastestArc = currentArc;
-//                 fastestArc.Target!.VPrev = current;
-//             }
-//         }
-//     }
-//
-//
-//     var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(_vertexCount);
-//
-//     // Add initial node to queue
-//     pq.Enqueue(startNode, 0);
-// }
-
-
         private void DijkstraPreparation(List<Vertex<TVertex, TArc>> vertices)
         {
             InjectVerticesWithInfiniteData(vertices);

@@ -37,7 +37,7 @@ namespace WebApp.ApiControllers
             var toPlanet = MapPlanetToEnum(to);
 
             var travelData = await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet);
-            var mappedData = travelData.Select(data => _travelDataMapper.Map(data));
+            var mappedData = travelData.Select(data => _travelDataMapper.Map(data)).Take(1);
 
             return Ok(mappedData);
         }

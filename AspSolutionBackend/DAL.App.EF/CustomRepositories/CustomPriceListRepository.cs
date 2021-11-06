@@ -100,9 +100,9 @@ namespace DAL.App.EF.CustomRepositories
             return path.Select(provider => new RouteInfoProvider()
             {
                 Distance = provider!.Legs.RouteInfo.Distance,
-                From = provider.Legs.RouteInfo.From,
-                To = provider.Legs.RouteInfo.To,
-                Provider = provider
+                From = provider.Legs.RouteInfo.From.Name.ToString(),
+                To = provider.Legs.RouteInfo.To.Name.ToString(),
+                Provider = provider,
             }).ToList();
         }
     }

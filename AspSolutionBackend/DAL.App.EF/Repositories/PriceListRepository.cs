@@ -55,8 +55,6 @@ namespace DAL.App.EF.Repositories
             return res;
         }
 
-        
-        
 
         protected static async Task<TravelPrices> QueryTravelData(IQueryable<TravelPrices> query)
         {
