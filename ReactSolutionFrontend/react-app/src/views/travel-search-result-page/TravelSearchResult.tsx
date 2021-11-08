@@ -50,6 +50,7 @@ const TravelSearchResult = () => {
     let res = await TravelRoutesService.GetTravelRoutes<ITravelData>('/route', params.from, params.to, '')
     if (res.statusCode === 200) {
       let resData = (res.data as ITravelData[])[0]
+      console.log(resData)
       setTravelSearchResult({ ...resData, routes: [...resData.routes] })
     }
   }

@@ -40,7 +40,7 @@ namespace DAL.App.EF.CustomRepositories
             if (optimizedLegRouteData.Count - 1 == 0) return new List<TravelData>();
 
 
-            var travelDataList = ConvertPathsToTravelDataList(optimizedLegRouteData!, travelPrices.ValidUntil);
+            var travelDataList = ConvertPathsToTravelDataList(optimizedLegRouteData!, travelPrices);
             return travelDataList;
         }
 
@@ -80,25 +80,28 @@ namespace DAL.App.EF.CustomRepositories
         }
 
         private static List<TravelData> ConvertPathsToTravelDataList(List<List<Provider>> optimizedLegRouteData,
-            DateTime validUntil)
+            TravelPrices travelPrices)
         {
             return new List<TravelData>(
                 optimizedLegRouteData.Select(path => new TravelData()
                 {
+                    TravelPricesId = travelPrices.Id,
                     Routes = MapPathProviderToRouteInfoProvider(path),
                     TotalDistanceInKilometers = path.Sum(provider => provider.Legs.RouteInfo.Distance),
                     TotalLengthInHours = path.Sum(provider =>
                         DateUtils.CalculateHoursBetweenDates(provider.FlightStart, provider.FlightEnd)),
                     TotalPrice = path.Sum(provider => provider.Price),
-                    ValidUntil = validUntil
+                    ValidUntil = travelPrices.ValidUntil
                 }).ToList()
             );
         }
 
+        //TODO : Routeinfo and provider only?
         private static List<RouteInfoProvider> MapPathProviderToRouteInfoProvider(List<Provider> path)
         {
             return path.Select(provider => new RouteInfoProvider()
             {
+                RouteInfoId = provider.Legs.RouteInfoId,
                 Distance = provider!.Legs.RouteInfo.Distance,
                 From = provider.Legs.RouteInfo.From.Name.ToString(),
                 To = provider.Legs.RouteInfo.To.Name.ToString(),

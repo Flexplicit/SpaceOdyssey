@@ -15,7 +15,7 @@ import { IRouteInfo } from "./IRouteInfo";
 
 
 export interface IRouteInfoProvider{
-  id: string;
+  routeInfoId: string;
   from: string;
   to:string;
   distance: number;

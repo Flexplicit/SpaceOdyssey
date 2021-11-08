@@ -5,6 +5,7 @@ namespace App.Domain.TravelDataDTO
 {
     public class RouteInfoProvider
     {
+        public Guid RouteInfoId { get; set; }
         public string From { get; set; } = null!;
         public string To { get; set; } = null!;
 

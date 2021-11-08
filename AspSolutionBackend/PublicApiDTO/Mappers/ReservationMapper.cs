@@ -11,6 +11,16 @@ namespace PublicApiDTO.Mappers
         public ReservationMapper(IMapper mapper) : base(mapper)
         {
         }
-        
+
+
+        public DomainDTO.Reservation MapPublicAddedReservationToDomain(PublicDto.AddReservation addReservation)
+        {
+            return new Reservation
+            {
+                TravelPricesId = addReservation.TravelPricesId,
+                FirstName = addReservation.FirstName,
+                LastName = addReservation.LastName
+            };
+        }
     }
 }

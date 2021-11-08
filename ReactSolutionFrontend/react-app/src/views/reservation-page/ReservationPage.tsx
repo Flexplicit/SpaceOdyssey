@@ -1,14 +1,31 @@
 import React, { useState } from 'react'
-import { useLocation } from 'react-router'
+import { useHistory, useLocation } from 'react-router'
 import PlanetRoute from '../../components/planet-route/PlanetRoute'
 import ReservationForm, { IReservationFormProps } from '../../components/reservation-form/ReservationForm'
+import { IRouteInfoDataAdd } from '../../domain/IRouteInfoData'
 import { ITravelData } from '../../domain/ITravelData'
+import { IReservation, IReservationAdd } from '../../domain/Reservation'
+import { BaseServices } from '../../services/base-service'
 
 const ReservationPage = () => {
   let location = useLocation<ITravelData>()
+  let history = useHistory()
   const [chosenTravelRoute, setChosenTravelRoute] = useState(location.state)
-  const handleSubmit = (inputs: IReservationFormProps) => {
-    console.log(inputs)
+
+  const handleSubmit = async (inputs: IReservationFormProps) => {
+    let reservation = {
+      firstName: inputs.firstName,
+      lastName: inputs.lastName,
+      travelPricesId: chosenTravelRoute.travelPricesId,
+      routes: chosenTravelRoute.routes.map((route) => {
+        return { routeInfoId: route.routeInfoId, providerId: route.provider.id } as IRouteInfoDataAdd
+      }),
+    } as IReservationAdd
+    let res = await BaseServices.PostAsync('/reservation', reservation)
+    if (res.statusCode === 200) {
+      let resData = res.data as IReservation
+      history.push(`/reservation/success/${resData.id}`)
+    }
   }
 
   return (

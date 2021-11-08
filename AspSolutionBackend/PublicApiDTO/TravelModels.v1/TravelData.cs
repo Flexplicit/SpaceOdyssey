@@ -5,6 +5,7 @@ namespace PublicApiDTO.TravelModels.v1
 {
     public class TravelData
     {
+        public Guid TravelPricesId { get; set; }
         public DateTime ValidUntil { get; set; }
         public long TotalDistanceInKilometers { get; set; }
         public double TotalPrice { get; set; }

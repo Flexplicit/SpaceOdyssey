@@ -23,4 +23,17 @@ export class BaseServices {
       return { statusCode: 0, messages: [(error as Error).message] }
     }
   }
+
+  static async PostAsync<TInEntity,TOutEntity>(endpoint: string, entityToPost: TInEntity): Promise<IFetchResponse<TOutEntity>> {
+    try {
+      let res = await this.axios.post<TOutEntity>(endpoint, entityToPost)
+      return {
+        statusCode: res.status,
+        data: res.data,
+        messages: [res.statusText],
+      }
+    } catch (error) {
+      return { statusCode: 0, messages: [(error as Error).message] }
+    }
+  }
 }

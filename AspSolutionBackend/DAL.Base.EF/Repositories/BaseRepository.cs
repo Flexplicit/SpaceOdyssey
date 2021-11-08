@@ -11,8 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.Base.EF.Repositories
 {
     public class
-        BaseRepository<TDomainEntity, TDbContext> : BaseRepository<TDomainEntity, Guid,
-            TDbContext>
+        BaseRepository<TDomainEntity, TDbContext> : BaseRepository<TDomainEntity, Guid, TDbContext>
         where TDomainEntity : class, IDomainEntityId
         where TDbContext : DbContext
     {
@@ -28,6 +27,7 @@ namespace DAL.Base.EF.Repositories
         where TKey : IEquatable<TKey>
     {
         protected readonly TDbContext RepoDbContext;
+
         protected readonly DbSet<TDomainEntity> RepoDbSet;
         // protected readonly IBaseMapper<TDalEntity, TDomainEntity> Mapper;
 

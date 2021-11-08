@@ -11,7 +11,7 @@ namespace PublicApiDTO.TravelModels.v1
 
     public class AddReservation
     {
-        public Guid TravelPriceId { get; set; }
+        public Guid TravelPricesId { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
 
