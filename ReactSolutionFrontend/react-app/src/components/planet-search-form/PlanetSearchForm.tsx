@@ -24,7 +24,7 @@ const PlanetSearchForm = () => {
       currentErrors.push('Search Date must be in the future')
     }
     if (currentErrors.length === 0) {
-      history.push(`/search/planetroute/${searchData.from}/${searchData.to}/${searchData.date}`)
+      history.push(`/search/planetroute/${searchData.from}/${searchData.to}/${searchData.date.toISOString()}`)
     } else {
       setErrors([...currentErrors])
     }
@@ -49,7 +49,7 @@ const PlanetSearchForm = () => {
         <form action="" method="post">
           <div className="search-controls">
             <div className="form-group m-0">
-              <select onChange={(e) => setSearchData({ ...searchData, to: e.target.value })} className="form-control  form-control-lg rounded-pill selectpicker">
+              <select onChange={(e) => setSearchData({ ...searchData, from: e.target.value })} className="form-control  form-control-lg rounded-pill selectpicker">
                 <option selected disabled>
                   Leaving from
                 </option>
@@ -61,7 +61,7 @@ const PlanetSearchForm = () => {
               </select>
             </div>
             <div className="form-group m-0">
-              <select onChange={(e) => setSearchData({ ...searchData, from: e.target.value })} className="form-control  form-control-lg rounded-pill selectpicker">
+              <select onChange={(e) => setSearchData({ ...searchData, to: e.target.value })} className="form-control  form-control-lg rounded-pill selectpicker">
                 <option defaultValue={'default'} selected disabled>
                   Going to
                 </option>

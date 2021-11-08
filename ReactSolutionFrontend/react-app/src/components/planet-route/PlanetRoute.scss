@@ -1,0 +1,76 @@
+.rocket-rotate-straight {
+    transform: rotate(45deg);
+  }
+  
+  .rocket-margin {
+    margin-left: -1rem;
+  
+    // margin-right: 5rem;
+  }
+  .summaryleg-after-rocket {
+    margin-left: -4rem;
+  }
+  
+  .text-summaryleg-planet {
+    font-size: 1rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    color: #68697f;
+  }
+  
+  .text-summaryleg-time {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 400;
+    color: #444560;
+    display: inline-block;
+  }
+  
+  .text-summary-leg-maxtime {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 400;
+    color: #444560;
+  }
+  .text-summaryleg-stopcount {
+    color: #00a698;
+    white-space: pre;
+  }
+  
+  .summary-leg-border {
+    cursor: pointer;
+    position: relative;
+    background-color: rgb(255, 246, 246);
+    width: 30%;
+    height: 5rem;
+    border: 1px rgb(243, 209, 209) solid;
+    border-width: thin;
+    border-radius: 10px;
+    display: table-cell;
+    vertical-align: middle;
+    &:hover {
+      background-color: rgb(202, 196, 196);
+    }
+  }
+  
+  .line {
+    width: 100%;
+    background-color: #68697f;
+    height: 0.125rem;
+  }
+  
+  .summary-leg-down-arrow {
+    font-size: 1.5rem;
+    color: #666683;
+  }
+  .last-item {
+    position: absolute;
+    right: 0;
+  }
+  .summaryleg-price {
+    font-size: 0.95rem;
+    text-align: end;
+    font-weight: 700;
+    color: #1e1f41;
+  }
+  

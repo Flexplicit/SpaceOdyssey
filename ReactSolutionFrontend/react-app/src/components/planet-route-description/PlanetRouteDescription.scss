@@ -1,0 +1,29 @@
+.layover {
+    border-top: 1px rgb(194, 172, 172) solid;
+    border-bottom: 1px rgb(194, 172, 172) solid;
+  }
+  .modal-flight-info {
+    color: #141d38;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.125rem;
+  }
+  
+  .modal-info-smallinfo {
+    color: #343b53;
+    margin: 0.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .rotate-ship-up {
+    transform: rotate(25deg);
+    margin-right: 5px;
+    // margin-top: 8px;
+  }
+  
+  .rotate-ship-down {
+    transform: rotate(75deg);
+    margin-right: 5px;
+    margin-bottom: 8px;
+  }
+  
