@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using App.Domain.TravelModels;
@@ -30,11 +31,35 @@ namespace DAL.App.EF.Repositories
                 .ThenInclude(provider => provider.Company)
                 .FirstOrDefaultAsync();
 
-            res.TotalQuotedPrice = res.RouteInfoData.Sum(x => x.Provider.Price);
-            res.TotalQuotedTravelTimeInMinutes = res.RouteInfoData.Sum(route =>
-                DateUtils.CalculateHoursBetweenDates(route.Provider.FlightStart, route.Provider.FlightEnd));
+            AddPriceAndTravelTimeFields(res);
 
             return res;
+        }
+
+        private static void AddPriceAndTravelTimeFields(Reservation? res)
+        {
+            res!.TotalQuotedPrice = res.RouteInfoData.Sum(x => x.Provider.Price);
+            res.TotalQuotedTravelTimeInMinutes = res.RouteInfoData.Sum(route =>
+                DateUtils.CalculateHoursBetweenDates(route.Provider.FlightStart, route.Provider.FlightEnd));
+        }
+
+
+        public override async Task<IEnumerable<Reservation>> GetAllAsync(bool noTracking = true)
+        {
+            var query = await CreateQuery(noTracking)
+                .Include(reservation => reservation.RouteInfoData)
+                .ThenInclude(routeData => routeData.RouteInfo)
+                .ThenInclude(routeInfo => routeInfo.From)
+                .Include(reservation => reservation.RouteInfoData)
+                .ThenInclude(routeData => routeData.RouteInfo)
+                .ThenInclude(routeInfo => routeInfo.To)
+                .Include(reservation => reservation.RouteInfoData)
+                .ThenInclude(routeData => routeData.Provider)
+                .ThenInclude(provider => provider.Company)
+                .ToListAsync();
+            query.ForEach(AddPriceAndTravelTimeFields);
+
+            return query;
         }
 
         public Task<int> Test()

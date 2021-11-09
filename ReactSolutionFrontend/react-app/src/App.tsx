@@ -5,6 +5,7 @@ import Homepage from './views/homepage/Homepage'
 import TravelSearchResult from './views/travel-search-result-page/TravelSearchResult'
 import ReservationPage from './views/reservation-page/ReservationPage'
 import ReservationResultPage from './views/reservation-result-page/ReservationResultPage'
+import ReservationsListPage from './views/reservations-list-page/ReservationsListPage'
 
 function App() {
   return (
@@ -13,9 +14,10 @@ function App() {
       <main className="container">
         <Switch>
           <Route exact path="/" component={Homepage} />
-          <Route path="/search/planetroute/:from/:to/:date" component={TravelSearchResult} />
-          <Route path="/reservations/add" component={ReservationPage} />
-          <Route path="/reservations/success/:id" component={ReservationResultPage} />
+          <Route exact path="/search/planetroute/:from/:to/:date" component={TravelSearchResult} />
+          <Route exact path="/reservations/add" component={ReservationPage} />
+          <Route exact path="/reservations/success/:id" component={ReservationResultPage} />
+          <Route exact path="/reservations/" component={ReservationsListPage} />
           {/* <Route component={Page404} /> */}
         </Switch>
       </main>
