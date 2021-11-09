@@ -119,7 +119,6 @@ namespace Graph
         private void DijkstraInitialization(IEnumerable<Vertex<TVertex, TArc>> vertices,
             Vertex<TVertex, TArc> start)
         {
-            AddVertexToFirst(start);
 
             foreach (var v in vertices)
             {

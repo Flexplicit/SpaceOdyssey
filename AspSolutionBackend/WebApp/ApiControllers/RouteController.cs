@@ -30,12 +30,14 @@ namespace WebApp.ApiControllers
             _uow = uow;
         }
 
-        [HttpGet("{from}/{to}")]
-        public async Task<ActionResult<List<PublicDto.TravelData>>> GetRoutesBetweenTwoPlanets(string from, string to)
+        [HttpGet("{from}/{to}/{startDate}")]
+        public async Task<ActionResult<List<PublicDto.TravelData>>> GetRoutesBetweenTwoPlanets(string from, string to,
+            string startDate)
         {
             var fromPlanet = MapPlanetToEnum(from);
             var toPlanet = MapPlanetToEnum(to);
-
+            var date = DateTime.Parse(startDate);
+            
             var travelData = await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet);
             var mappedData = travelData.Select(data => _travelDataMapper.Map(data)).Take(1);
 
