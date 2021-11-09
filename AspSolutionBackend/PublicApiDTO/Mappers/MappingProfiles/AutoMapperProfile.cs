@@ -18,7 +18,7 @@ namespace PublicApiDTO.Mappers.MappingProfiles
                 .ReverseMap();
             CreateMap<PublicApiDTO.TravelModels.v1.Provider, App.Domain.TravelModels.Provider>().ReverseMap();
             
-            // CreateMap<PublicApiDTO.TravelModels.v1, App.Domain.TravelModels.Provider>().ReverseMap();
+            CreateMap<PublicApiDTO.TravelModels.v1.RouteInfoData, App.Domain.TravelModels.RouteInfoData>().ReverseMap();
         }
     }
 }

@@ -39,7 +39,7 @@ namespace DAL.App.EF.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalQuotedPrice = table.Column<double>(type: "float", nullable: false),
-                    TotalQuotedTravelTimeInMinutes = table.Column<int>(type: "int", nullable: false),
+                    TotalQuotedTravelTimeInMinutes = table.Column<double>(type: "float", nullable: false),
                     TravelPricesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>

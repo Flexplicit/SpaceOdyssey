@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211104172638_initial")]
+    [Migration("20211108221500_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,8 +123,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<double>("TotalQuotedPrice")
                         .HasColumnType("float");
 
-                    b.Property<int>("TotalQuotedTravelTimeInMinutes")
-                        .HasColumnType("int");
+                    b.Property<double>("TotalQuotedTravelTimeInMinutes")
+                        .HasColumnType("float");
 
                     b.Property<Guid>("TravelPricesId")
                         .HasColumnType("uniqueidentifier");

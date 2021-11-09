@@ -6,7 +6,8 @@ namespace PublicApiDTO.TravelModels.v1
     public class Reservation : UpdateReservation
     {
         public double TotalQuotedPrice { get; set; }
-        public int TotalQuotedTravelTimeInMinutes { get; set; }
+        public double TotalQuotedTravelTimeInMinutes { get; set; }
+        public List<RouteInfoData> RouteInfoData { get; set; } = null!;
     }
 
     public class AddReservation

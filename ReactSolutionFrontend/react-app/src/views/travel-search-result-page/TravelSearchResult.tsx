@@ -67,11 +67,17 @@ const TravelSearchResult = () => {
         </div>
         <div className="modal-body">
           {selectedRouteModalState.chosenRoute?.routes.map((routeObj) => (
-            <PlanetRouteDescription planetRoute={routeObj} key={routeObj.provider.id} />
+            <PlanetRouteDescription 
+            key={routeObj.provider.id}
+            routeInfoId={routeObj.provider.id}
+            from={routeObj.from}
+            to={routeObj.to}
+            distance={routeObj.distance}
+            provider={routeObj.provider} />
           ))}
         </div>
         <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={closeModal}>
+          <button type="button" className="btn btn-secondary" onClick={closeModal}>
             Close
           </button>
           <button type="button" className="btn btn-success" onClick={handleReservation}>

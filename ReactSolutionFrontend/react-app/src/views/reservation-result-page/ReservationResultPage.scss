@@ -1,0 +1,9 @@
+.clickable-icon {
+  color: rgb(81, 81, 116);
+
+  &:hover {
+    color: blue;
+    cursor: pointer;
+    filter: invert(48%) sepia(20%) saturate(2000%) hue-rotate(86deg) brightness(118%) contrast(119%);
+  }
+}

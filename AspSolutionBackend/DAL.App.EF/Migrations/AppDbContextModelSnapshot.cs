@@ -121,8 +121,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<double>("TotalQuotedPrice")
                         .HasColumnType("float");
 
-                    b.Property<int>("TotalQuotedTravelTimeInMinutes")
-                        .HasColumnType("int");
+                    b.Property<double>("TotalQuotedTravelTimeInMinutes")
+                        .HasColumnType("float");
 
                     b.Property<Guid>("TravelPricesId")
                         .HasColumnType("uniqueidentifier");

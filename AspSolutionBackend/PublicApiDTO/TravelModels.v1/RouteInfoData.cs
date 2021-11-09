@@ -7,8 +7,6 @@ namespace PublicApiDTO.TravelModels.v1
         public Guid Id { get; set; }
         public Provider Provider { get; set; } = null!;
         public RouteInfo RouteInfo { get; set; } = null!;
-        public Reservation Reservation { get; set; } = null!;
-        public Guid ReservationId { get; set; }
     }
 
     public class AddRouteInfoData

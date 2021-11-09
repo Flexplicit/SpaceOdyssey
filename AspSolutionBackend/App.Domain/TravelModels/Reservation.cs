@@ -12,7 +12,7 @@ namespace App.Domain.TravelModels
 
 
         public double TotalQuotedPrice { get; set; }
-        public int TotalQuotedTravelTimeInMinutes { get; set; }
+        public double TotalQuotedTravelTimeInMinutes { get; set; }
 
         public List<RouteInfoData> RouteInfoData { get; set; } = null!;
 

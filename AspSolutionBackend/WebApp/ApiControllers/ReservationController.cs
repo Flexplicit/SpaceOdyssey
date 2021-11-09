@@ -71,7 +71,8 @@ namespace WebApp.ApiControllers
 
 
             await _uow.SaveChangesAsync();
-            return CreatedAtAction("GetReservation", new { id = addedReservation.Id }, _reservationMapper.Map(addedReservation));
+            return CreatedAtAction("GetReservation", new { id = addedReservation.Id },
+                _reservationMapper.Map(addedReservation));
         }
     }
 }

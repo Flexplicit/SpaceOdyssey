@@ -1,7 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using App.Domain.TravelModels;
 using Contracts.DAL.APP.Repositories;
 using DAL.Base.EF.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Utils;
 
 namespace DAL.App.EF.Repositories
 {
@@ -11,6 +15,27 @@ namespace DAL.App.EF.Repositories
         {
         }
 
+
+        public override async Task<Reservation?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        {
+            var res = await CreateQuery(noTracking)
+                .Include(reservation => reservation.RouteInfoData)
+                .ThenInclude(routeData => routeData.RouteInfo)
+                .ThenInclude(routeInfo => routeInfo.From)
+                .Include(reservation => reservation.RouteInfoData)
+                .ThenInclude(routeData => routeData.RouteInfo)
+                .ThenInclude(routeInfo => routeInfo.To)
+                .Include(reservation => reservation.RouteInfoData)
+                .ThenInclude(routeData => routeData.Provider)
+                .ThenInclude(provider => provider.Company)
+                .FirstOrDefaultAsync();
+
+            res.TotalQuotedPrice = res.RouteInfoData.Sum(x => x.Provider.Price);
+            res.TotalQuotedTravelTimeInMinutes = res.RouteInfoData.Sum(route =>
+                DateUtils.CalculateHoursBetweenDates(route.Provider.FlightStart, route.Provider.FlightEnd));
+
+            return res;
+        }
 
         public Task<int> Test()
         {
