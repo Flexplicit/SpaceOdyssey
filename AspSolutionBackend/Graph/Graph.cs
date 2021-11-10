@@ -9,117 +9,16 @@ using static System.Int32;
 
 namespace Graph
 {
-    public class Graph<TVertex, TArc>
+    public class Graph<TVertex, TArc> : AbstractGraph<TVertex, TArc>
     {
-        private readonly string _id;
-        private Vertex<TVertex, TArc>? _first;
-        private int _vertexCount;
-        private int _arcCount;
-
-
-        public Graph(string id, Vertex<TVertex, TArc>? first = null)
+        public Graph(string id) : base(id)
         {
-            _id = id;
-            _first = first;
         }
 
-        public Vertex<TVertex, TArc> CreateVertex(string vertexId, TVertex data)
-        {
-            _vertexCount++;
-            var res = new Vertex<TVertex, TArc>(vertexId, data, _first);
-
-            _first = res;
-            return res;
-        }
-
-
-        private void AddVertexToFirst(Vertex<TVertex, TArc> vertexToAdd)
-        {
-            if (_first == null)
-            {
-                _first = vertexToAdd;
-                return;
-            }
-
-            var current = _first;
-            while (current != null)
-            {
-                if (current.Next == vertexToAdd)
-                {
-                    var tempFirstNextNodes = _first.Next;
-                    var tempVertexToAddNext = vertexToAdd.Next;
-                    current.Next = _first;
-                    vertexToAdd.Next = tempFirstNextNodes;
-                    _first.Next = tempVertexToAddNext;
-                    _first = vertexToAdd;
-                    return;
-                }
-
-                current = current.Next;
-            }
-        }
-
-        public Arc<TVertex, TArc> CreateArc(string vId, Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
-            TArc? arcData, long? arcWeight)
-        {
-            var res = new Arc<TVertex, TArc>(vId, arcData, to, arcWeight);
-            _arcCount++;
-            res.Next = from.GetLatestArc();
-            res.Target = to;
-            from.AdjacentArcs.Add(res);
-            return res;
-        }
-
-        private int[,] CreateAdjMatrix()
-        {
-            if (_first == null)
-            {
-                throw new Exception("Cannot create AdjMatrix on an empty graph");
-            }
-
-            var info = 0;
-            var v = _first;
-            while (v != null)
-            {
-                v.Info = info++;
-                v = v.Next!;
-            }
-
-            int[,] res = new int[info, info];
-            v = _first;
-            while (v != null)
-            {
-                var i = v.Info;
-                using var a = v.AdjacentArcs.GetEnumerator();
-                while (a.MoveNext())
-                {
-                    var j = a.Current.Target!.Info;
-                    res[i, j]++;
-                }
-
-                v = v.Next;
-            }
-
-            return res;
-        }
-
-        private Vertex<TVertex, TArc>? GetVertexById(string id)
-        {
-            var current = this._first;
-            while (current != null)
-            {
-                if (current.Id == id) return current;
-                current = current.Next;
-            }
-
-            Console.WriteLine($"Current Graph {this._id}, does not contain given Vertex with id: {id}");
-            return null;
-        }
 
         private void DijkstraInitialization(IEnumerable<Vertex<TVertex, TArc>> vertices,
             Vertex<TVertex, TArc> start)
         {
-
             foreach (var v in vertices)
             {
                 v.DistanceFromStartVertex = MaxValue / 2;
@@ -147,15 +46,14 @@ namespace Graph
         public List<List<Arc<TVertex, TArc>>> YensKShortestPathFinder(Vertex<TVertex, TArc> from,
             Vertex<TVertex, TArc> to, int limit = 5)
         {
-            if (_first == null || limit < 1)
+            if (First == null || limit < 1)
             {
                 throw new Exception("An empty graph or negative limit occured");
             }
-
-            var permanentShortestPaths = new List<List<Arc<TVertex, TArc>>>(); // A list
+            var permanentShortestPaths = new List<List<Arc<TVertex, TArc>>>();
             var shortestPath1 = DijkstraPath(from, to);
             permanentShortestPaths.Add(shortestPath1);
-            var candidatePaths = new List<List<Arc<TVertex, TArc>>>(); // B list
+            var candidatePaths = new List<List<Arc<TVertex, TArc>>>();
 
 
             for (var k = 1; k < limit; k++)
@@ -215,10 +113,9 @@ namespace Graph
             var vertices = GetAllVertices();
             DijkstraInitialization(vertices, from);
 
-            // DijkstraInitialization(vertices, _first);
             var result = new List<Vertex<TVertex, TArc>>();
 
-            var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(_vertexCount);
+            var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(VertexCount);
             foreach (var ver in vertices)
             {
                 pq.Enqueue(ver, ver.DistanceFromStartVertex);
@@ -265,46 +162,36 @@ namespace Graph
         private void DijkstraPreparation(List<Vertex<TVertex, TArc>> vertices)
         {
             InjectVerticesWithInfiniteData(vertices);
-            _first!.DistanceFromStartVertex = 0;
+            First!.DistanceFromStartVertex = 0;
         }
-
 
         private static void InjectVerticesWithInfiniteData(List<Vertex<TVertex, TArc>> vertices)
             => vertices.ForEach(vertex => vertex.DistanceFromStartVertex = MaxValue / 2);
 
 
-        private List<Vertex<TVertex, TArc>> GetAllVertices()
-        {
-            var vertices = new List<Vertex<TVertex, TArc>>(_vertexCount);
-            var curr = _first;
-            while (curr != null)
-            {
-                vertices.Add(curr);
-                curr = curr.Next;
-            }
-
-            return vertices;
-        }
-
-
+        /// <summary>
+        /// Finds the all the paths from one node from to to node and returns a arc list with the paths.
+        /// </summary>
+        /// <param name="from">From vertex which will be added as the first vertex.</param>
+        /// <param name="to">To vertex where we will be traveling to.</param>
         public List<List<Arc<TVertex, TArc>>> GetArcDepthFirstSearch(Vertex<TVertex, TArc> from,
             Vertex<TVertex, TArc> to)
         {
             var originVertex = GetVertexById(@from.Id);
             if (originVertex != null)
             {
-                AddVertexToFirst(originVertex);
+                base.AddVertexToFirst(originVertex);
             }
 
-            if (_first == null) return new List<List<Arc<TVertex, TArc>>>();
+            if (First == null) return new List<List<Arc<TVertex, TArc>>>();
 
             var vertexPathList = new List<Vertex<TVertex, TArc>>();
             var arcResultPath = new List<List<Arc<TVertex, TArc>>>();
 
 
-            vertexPathList.Add(_first);
+            vertexPathList.Add(First);
 
-            DepthFirstSearchUtils(_first, to, vertexPathList, arcResultPath,
+            DepthFirstSearchUtils(First, to, vertexPathList, arcResultPath,
                 new List<Arc<TVertex, TArc>>());
             return arcResultPath;
         }

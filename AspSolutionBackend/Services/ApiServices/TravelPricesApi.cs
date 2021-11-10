@@ -11,7 +11,7 @@ namespace Services.ApiServices
     {
         private const string BaseUrl = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/";
         private const string TravelUrl = BaseUrl + "/TravelPrices/";
-        private static HttpClient _client; // maybe use restClient?
+        private static HttpClient _client;
 
 
         static TravelPricesApi()

@@ -13,7 +13,6 @@ namespace PublicApiDTO.TravelModels.v1
 
     public class AddRouteInfoProvider
     {
-        // public Guid Id { get; set; }
         public Guid RouteInfoId { get; set; }
         public Guid ProviderId { get; set; }
     }

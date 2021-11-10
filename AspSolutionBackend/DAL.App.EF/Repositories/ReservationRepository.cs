@@ -61,10 +61,5 @@ namespace DAL.App.EF.Repositories
 
             return query;
         }
-
-        public Task<int> Test()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

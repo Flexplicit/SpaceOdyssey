@@ -32,5 +32,8 @@ namespace DAL.App.EF
 
         public IBaseRepository<RouteInfoData, Guid> RouteInfoData =>
             GetRepository(() => new BaseRepository<RouteInfoData, Guid, AppDbContext>(_uowContext));
+
+        public ICompanyRepository Companies =>
+            GetRepository(() => new CompanyRepository(_uowContext));
     }
 }

@@ -6,6 +6,5 @@ namespace Contracts.DAL.APP.Repositories
 {
     public interface IReservationRepository : IBaseRepository<Reservation>
     {
-        Task<int> Test();
     }
 }

@@ -20,12 +20,12 @@ namespace DAL.App.EF.CustomRepositories
         }
 
 
-        public async Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet @from, EPlanet to)
+        public async Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet @from, EPlanet to, DateTime startDate)
         {
             var query = CreateQuery(true);
-            var travelPrices = await QueryTravelData(query);
+            var travelPrices = await QueryTravelData(query, startDate);
 
-            var graph = new Graph<EPlanet, Provider>("");
+            var graph = new Graph<EPlanet, Provider>("RouteGraph");
 
             var planetRouteDict = AddVerticesAndArcsToGraph(travelPrices, graph);
 
@@ -52,11 +52,9 @@ namespace DAL.App.EF.CustomRepositories
 
 
         private static Dictionary<EPlanet, Vertex<EPlanet, Provider>> AddVerticesAndArcsToGraph(
-            TravelPrices travelPrices, Graph<EPlanet, Provider> graph)
+            TravelPrices travelPrices, AbstractGraph<EPlanet, Provider> graph)
         {
             var planetRouteDict = new Dictionary<EPlanet, Vertex<EPlanet, Provider>>();
-
-
             foreach (var leg in travelPrices.Legs!)
             {
                 if (!planetRouteDict.TryGetValue(leg.RouteInfo.From.Name, out var fromVertex))

@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using App.Domain.TravelModels;
-using App.Domain.TravelModels.Enums;
 using Contracts.DAL.App.Repositories;
-using DAL.App.EF.CustomRepositories;
 using DAL.Base.EF.Repositories;
-// using Dijkstra.NET.Graph;
-// using Dijkstra.NET.ShortestPath;
-using Graph;
-using Graph.GraphModels;
 using Microsoft.EntityFrameworkCore;
-using PublicApiDTO.TravelModels.v1;
 using Services.ApiServices;
 using DomainDTO = App.Domain.TravelModels;
 
@@ -56,7 +48,7 @@ namespace DAL.App.EF.Repositories
         }
 
 
-        protected static async Task<TravelPrices> QueryTravelData(IQueryable<TravelPrices> query)
+        protected static async Task<TravelPrices> QueryTravelData(IQueryable<TravelPrices> query, DateTime startDate)
         {
             return await query
                 // .Where(priceList => priceList.ValidUntil > DateTime.Now)
@@ -69,6 +61,8 @@ namespace DAL.App.EF.Repositories
                 .Include(travelPrice => travelPrice.Legs)
                 .ThenInclude(leg => leg.Providers)
                 .ThenInclude(provider => provider.Company)
+                .Where(travelPrices =>
+                    travelPrices.Legs!.Any(leg => leg.Providers!.Any(provider => provider.FlightStart > startDate)))
                 .FirstOrDefaultAsync();
         }
     }

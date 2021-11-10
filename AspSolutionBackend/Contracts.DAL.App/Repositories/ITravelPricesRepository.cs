@@ -15,7 +15,7 @@ namespace Contracts.DAL.App.Repositories
 
     public interface ICustomTravelPricesRepository : ITravelPricesRepository
     {
-        Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to);
+        Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to, DateTime startDate);
         Task<bool> IsTravelPriceValid(Guid travelPriceId);
     }
 }

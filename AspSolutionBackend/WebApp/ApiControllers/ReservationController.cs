@@ -54,13 +54,12 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Reservation>> PostReservation(AddReservation reservation)
         {
-            // if (!await _uow.TravelPrices.IsTravelPriceValid(reservation.TravelPricesId))
-            // {
-            //     return NotFound("Given price list is not valid");
-            // }
+            if (!await _uow.TravelPrices.IsTravelPriceValid(reservation.TravelPricesId))
+            {
+                return NotFound("Given price list is not valid");
+            }
 
-            var addedReservation =
-                _uow.Reservations.Add(_reservationMapper.MapPublicAddedReservationToDomain(reservation));
+            var addedReservation = _uow.Reservations.Add(_reservationMapper.MapPublicAddedReservationToDomain(reservation));
 
             reservation.Routes.ForEach(route =>
             {
@@ -68,8 +67,7 @@ namespace WebApp.ApiControllers
                 mappedRoute.ReservationId = addedReservation.Id;
                 _uow.RouteInfoData.Add(mappedRoute);
             });
-
-
+            
             await _uow.SaveChangesAsync();
             return CreatedAtAction("GetReservation", new { id = addedReservation.Id },
                 _reservationMapper.Map(addedReservation));

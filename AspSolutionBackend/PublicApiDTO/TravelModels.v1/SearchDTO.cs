@@ -4,8 +4,6 @@
     {
         public Planet From { get; set; } = null!;
         public Planet To { get; set; } = null!;
-
-        // Filters below   
         
     }
 }
