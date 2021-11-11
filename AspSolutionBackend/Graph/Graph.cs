@@ -50,6 +50,7 @@ namespace Graph
             {
                 throw new Exception("An empty graph or negative limit occured");
             }
+
             var permanentShortestPaths = new List<List<Arc<TVertex, TArc>>>();
             var shortestPath1 = DijkstraPath(from, to);
             permanentShortestPaths.Add(shortestPath1);
@@ -74,7 +75,7 @@ namespace Graph
                 }
 
                 // We compare and pick the minWeighed path
-                var candidatePathMinWeightIndex = GetMinIndexValue(candidatePaths);
+                var candidatePathMinWeightIndex = GetMinWeightSumIndex(candidatePaths);
                 permanentShortestPaths.Add(candidatePaths[candidatePathMinWeightIndex]);
                 candidatePaths.RemoveRange(0, candidatePaths.Count);
             }
@@ -82,7 +83,7 @@ namespace Graph
             return permanentShortestPaths;
         }
 
-        private static int GetMinIndexValue(IEnumerable<List<Arc<TVertex, TArc>>> candidatePaths)
+        private static int GetMinWeightSumIndex(IEnumerable<List<Arc<TVertex, TArc>>> candidatePaths)
         {
             var minIndex = 0;
             long minWeight = 0;
@@ -108,7 +109,8 @@ namespace Graph
         /// </summary>
         /// <param name="from">From vertex which will be added as the first vertex.</param>
         /// <param name="to">To vertex where we will be traveling to.</param>
-        public List<Arc<TVertex, TArc>> DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to)
+        public List<Arc<TVertex, TArc>> DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
+            DateTime start)
         {
             var vertices = GetAllVertices();
             DijkstraInitialization(vertices, from);
@@ -121,6 +123,8 @@ namespace Graph
                 pq.Enqueue(ver, ver.DistanceFromStartVertex);
             }
 
+
+            var currentDate = start;
             while (pq.Count > 0)
             {
                 var uVertex = pq.Dequeue();
@@ -132,7 +136,9 @@ namespace Graph
                     {
                         var curr = uArcs.Current;
                         if (!curr.IsConnectedToGraph) continue;
-
+                        
+                        
+                        
                         var vVertex = curr.Target!;
                         DijkstraArcRelaxation(uVertex, vVertex, curr);
                         pq.UpdatePriority(vVertex, vVertex.DistanceFromStartVertex);

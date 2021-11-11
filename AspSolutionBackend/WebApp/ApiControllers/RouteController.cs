@@ -30,20 +30,24 @@ namespace WebApp.ApiControllers
             _uow = uow;
         }
 
-        [HttpGet("{from}/{to}/{startDate}")]
-        public async Task<ActionResult<List<PublicDto.TravelData>>> GetRoutesBetweenTwoPlanets(string from, string to,
-            string startDate)
+        [HttpGet("{from}/{to}/{startDate}/{companyJsonNameArray}")]
+        public async Task<ActionResult<List<PublicDto.TravelData>>> GetRoutesBetweenTwoPlanets(
+            string from,
+            string to,
+            // string sortBy,
+            string startDate,
+            string companyJsonNameArray)
         {
             var fromPlanet = MapPlanetToEnum(from);
             var toPlanet = MapPlanetToEnum(to);
             var date = DateTime.Parse(startDate);
+            var companies = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(companyJsonNameArray);
 
             var travelData = await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet, date);
-            var mappedData = travelData.Select(data => _travelDataMapper.Map(data)).Take(1);
+            var mappedData = travelData.Select(data => _travelDataMapper.Map(data));
 
             return Ok(mappedData);
         }
-
 
         private static EPlanet MapPlanetToEnum(string to)
         {

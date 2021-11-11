@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using AutoMapper;
 using Contracts.DAL.App;
-using DAL.App.EF;
 using Microsoft.AspNetCore.Mvc;
 using PublicApiDTO.Mappers.MappingProfiles;
 using PublicApiDTO.TravelModels.v1;
