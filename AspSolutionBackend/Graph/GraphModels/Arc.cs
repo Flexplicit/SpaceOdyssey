@@ -3,18 +3,9 @@
 namespace Graph.GraphModels
 {
     public class Arc<TVertex, TArc>
-        // where TArc : class where TVertex : class
     {
-        public Arc(string id, TArc? arcData, Vertex<TVertex, TArc> to, long? arcWeight = null)
-        {
-            Id = id;
-            ArcData = arcData;
-            Target = to;
-            Weight = arcWeight ?? 0;
-        }
-
-        public Arc(string id, TArc? arcData, Vertex<TVertex, TArc> to, DateTime arcStartConstraint,
-            DateTime arcEndConstraint, long? arcWeight = null)
+        public Arc(string id, TArc? arcData, Vertex<TVertex, TArc> to, long? arcWeight = null,
+            DateTime? arcStartConstraint = null, DateTime? arcEndConstraint = null)
         {
             Id = id;
             ArcData = arcData;
@@ -32,8 +23,9 @@ namespace Graph.GraphModels
 
         public long Weight { get; set; }
 
-        public DateTime? ArcStart { get; set; }
+        public DateTime DatePreviousEnd { get; set; }
         public DateTime? ArcEnd { get; set; }
+        public DateTime? ArcStart { get; set; }
         public Vertex<TVertex, TArc>? VPrev { get; set; }
 
         public bool Checked { get; set; } = false;

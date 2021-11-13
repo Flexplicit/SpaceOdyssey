@@ -32,7 +32,7 @@ namespace DAL.App.EF.CustomRepositories
             if (!planetRouteDict.TryGetValue(@from, out var vertexFrom) ||
                 !planetRouteDict.TryGetValue(to, out var vertexTo)) return new List<TravelData>();
 
-            var optimizedArcData = graph.YensKShortestPathFinder(vertexFrom, vertexTo);
+            var optimizedArcData = graph.YensKShortestPathFinder(vertexFrom, vertexTo, startDate);
             var optimizedLegRouteData = optimizedArcData
                 .Select(GraphComponentMapper.MapDataFromArcs)
                 .ToList();
@@ -71,7 +71,7 @@ namespace DAL.App.EF.CustomRepositories
 
                 leg.Providers!.ForEach(provider =>
                     graph.CreateArc($"{fromVertex.Id}-{toVertex.Id}", fromVertex, toVertex, provider,
-                        (long?)provider.Price));
+                        (long?)provider.Price, provider.FlightStart, provider.FlightEnd));
             }
 
             return planetRouteDict;

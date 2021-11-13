@@ -26,9 +26,9 @@ namespace Graph
         }
 
         public Arc<TVertex, TArc> CreateArc(string vId, Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
-            TArc? arcData, long? arcWeight)
+            TArc? arcData, long? arcWeight, DateTime? start, DateTime? end)
         {
-            var res = new Arc<TVertex, TArc>(vId, arcData, to, arcWeight);
+            var res = new Arc<TVertex, TArc>(vId, arcData, to, arcWeight, start, end);
             ArcCount++;
             res.Next = from.GetLatestArc();
             res.Target = to;

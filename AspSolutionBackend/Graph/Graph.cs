@@ -44,7 +44,7 @@ namespace Graph
 
         // limit should be as LOW AS POSSIBLE!
         public List<List<Arc<TVertex, TArc>>> YensKShortestPathFinder(Vertex<TVertex, TArc> from,
-            Vertex<TVertex, TArc> to, int limit = 5)
+            Vertex<TVertex, TArc> to, DateTime start, int limit = 5)
         {
             if (First == null || limit < 1)
             {
@@ -52,7 +52,7 @@ namespace Graph
             }
 
             var permanentShortestPaths = new List<List<Arc<TVertex, TArc>>>();
-            var shortestPath1 = DijkstraPath(from, to);
+            var shortestPath1 = DijkstraPath(from, to, start);
             permanentShortestPaths.Add(shortestPath1);
             var candidatePaths = new List<List<Arc<TVertex, TArc>>>();
 
@@ -65,7 +65,7 @@ namespace Graph
                 {
                     // we temporary remove chosen arc then run dijkstra again
                     arc.IsConnectedToGraph = false;
-                    var candidateRes = DijkstraPath(from, to);
+                    var candidateRes = DijkstraPath(from, to, start);
 
                     if (candidateRes.Count < 0) continue;
 
@@ -115,7 +115,7 @@ namespace Graph
             var vertices = GetAllVertices();
             DijkstraInitialization(vertices, from);
 
-            var result = new List<Vertex<TVertex, TArc>>();
+            // var result = new HashSet<Vertex<TVertex, TArc>>();
 
             var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(VertexCount);
             foreach (var ver in vertices)
@@ -128,20 +128,48 @@ namespace Graph
             while (pq.Count > 0)
             {
                 var uVertex = pq.Dequeue();
-                result.Add(uVertex);
+                // result.Add(uVertex);
                 if (uVertex.AdjacentArcs.Count > 0)
                 {
+                    var pathExists = false;
+
                     using var uArcs = uVertex.AdjacentArcs.OrderBy(arc => arc.Weight).GetEnumerator();
+
                     while (uArcs.MoveNext())
                     {
                         var curr = uArcs.Current;
-                        if (!curr.IsConnectedToGraph) continue;
-                        
-                        
-                        
+                        if (!curr.IsConnectedToGraph || curr.ArcStart!.Value < currentDate || curr.Checked) continue;
+
                         var vVertex = curr.Target!;
                         DijkstraArcRelaxation(uVertex, vVertex, curr);
                         pq.UpdatePriority(vVertex, vVertex.DistanceFromStartVertex);
+                        pathExists = true;
+
+
+                        // We save older Date so we can move back later if necessary
+                        curr.DatePreviousEnd = currentDate;
+                        currentDate = curr.ArcEnd!.Value;
+                    }
+
+                    if (!pathExists && from.Id == uVertex.Id)
+                    {
+                        continue;
+                    }
+
+
+                    if (!pathExists)
+                    {
+                        if (uVertex.ChosenArc == null) // think about this one
+                        {
+                            break;
+                        }
+
+                        if (from.Id == uVertex.Id) continue;
+                        uVertex.DistanceFromStartVertex = int.MaxValue / 2;
+                        uVertex.ChosenArc!.Checked = true;
+                        pq.Enqueue(uVertex, uVertex.DistanceFromStartVertex);
+                        pq.Enqueue(uVertex.VPrev!, uVertex.VPrev!.DistanceFromStartVertex);
+                        currentDate = uVertex.ChosenArc.DatePreviousEnd;
                     }
                 }
             }
