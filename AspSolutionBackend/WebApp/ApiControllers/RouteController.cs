@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using App.Domain.TravelModels.Enums;
 using AutoMapper;
 using Contracts.DAL.App;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using PublicApiDTO.Mappers;
 using PublicApiDTO.TravelModels.v1;
@@ -30,20 +31,21 @@ namespace WebApp.ApiControllers
             _uow = uow;
         }
 
-        [HttpGet("{from}/{to}/{startDate}/{companyJsonNameArray}")]
+        [HttpGet("{from}/{to}/{startDate}/{sortBy}/{companyJsonNameArray}")]
         public async Task<ActionResult<List<PublicDto.TravelData>>> GetRoutesBetweenTwoPlanets(
             string from,
             string to,
-            // string sortBy,
+            string sortBy,
             string startDate,
             string companyJsonNameArray)
         {
             var fromPlanet = MapPlanetToEnum(from);
             var toPlanet = MapPlanetToEnum(to);
             var date = DateTime.Parse(startDate);
+            var sortByEnum = Enum.Parse<ESortBy>(sortBy, true);
             var companies = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(companyJsonNameArray);
-
-            var travelData = await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet, date);
+            
+            var travelData = await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet, date, sortByEnum, companies);
             var mappedData = travelData.Select(data => _travelDataMapper.Map(data));
 
             return Ok(mappedData);

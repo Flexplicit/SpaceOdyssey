@@ -20,14 +20,28 @@ namespace DAL.App.EF.CustomRepositories
         }
 
 
-        public async Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet @from, EPlanet to, DateTime startDate)
+        public async Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet @from, EPlanet to, DateTime startDate,
+            ESortBy sortBy, List<string> providers)
         {
             var query = CreateQuery(true);
             var travelPrices = await QueryTravelData(query, startDate);
 
+            FilterProviders(travelPrices, providers);
+
+
             var graph = new Graph<EPlanet, Provider>("RouteGraph");
 
-            var planetRouteDict = AddVerticesAndArcsToGraph(travelPrices, graph);
+            Func<Provider, double> arcWeightFunc = sortBy switch
+            {
+                ESortBy.Time => provider =>
+                    DateUtils.CalculateSecondsBetweenDates(provider.FlightStart, provider.FlightEnd),
+                ESortBy.Distance => provider => provider.Legs!.RouteInfo!.Distance,
+                ESortBy.Price => provider => provider.Price,
+                _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, "Cannot find weight function")
+            };
+
+            var planetRouteDict = AddVerticesAndArcsToGraph(travelPrices, graph, arcWeightFunc);
+
 
             if (!planetRouteDict.TryGetValue(@from, out var vertexFrom) ||
                 !planetRouteDict.TryGetValue(to, out var vertexTo)) return new List<TravelData>();
@@ -37,11 +51,14 @@ namespace DAL.App.EF.CustomRepositories
                 .Select(GraphComponentMapper.MapDataFromArcs)
                 .ToList();
 
-            if (optimizedLegRouteData.Count - 1 == 0) return new List<TravelData>();
-
-
             var travelDataList = ConvertPathsToTravelDataList(optimizedLegRouteData!, travelPrices);
             return travelDataList;
+        }
+
+        private static void FilterProviders(TravelPrices travelPrices, ICollection<string> providers)
+        {
+            travelPrices?.Legs?.ForEach(leg =>
+                leg.Providers?.RemoveAll(prov => !providers.Contains(prov.Company?.Name ?? "")));
         }
 
         public async Task<bool> IsTravelPriceValid(Guid travelPriceId)
@@ -52,18 +69,18 @@ namespace DAL.App.EF.CustomRepositories
 
 
         private static Dictionary<EPlanet, Vertex<EPlanet, Provider>> AddVerticesAndArcsToGraph(
-            TravelPrices travelPrices, AbstractGraph<EPlanet, Provider> graph)
+            TravelPrices travelPrices, AbstractGraph<EPlanet, Provider> graph, Func<Provider, double> arcWeightFunction)
         {
             var planetRouteDict = new Dictionary<EPlanet, Vertex<EPlanet, Provider>>();
             foreach (var leg in travelPrices.Legs!)
             {
-                if (!planetRouteDict.TryGetValue(leg.RouteInfo.From.Name, out var fromVertex))
+                if (!planetRouteDict.TryGetValue(leg.RouteInfo!.From!.Name, out var fromVertex))
                 {
                     fromVertex = graph.CreateVertex(leg.RouteInfo.From.Name.ToString(), leg.RouteInfo.From.Name);
                     planetRouteDict.Add(leg.RouteInfo.From.Name, fromVertex);
                 }
 
-                if (!planetRouteDict.TryGetValue(leg.RouteInfo.To.Name, out var toVertex))
+                if (!planetRouteDict.TryGetValue(leg.RouteInfo.To!.Name, out var toVertex))
                 {
                     toVertex = graph.CreateVertex(leg.RouteInfo.To.Name.ToString(), leg.RouteInfo.To.Name);
                     planetRouteDict.Add(leg.RouteInfo.To.Name, toVertex);
@@ -71,7 +88,7 @@ namespace DAL.App.EF.CustomRepositories
 
                 leg.Providers!.ForEach(provider =>
                     graph.CreateArc($"{fromVertex.Id}-{toVertex.Id}", fromVertex, toVertex, provider,
-                        (long?)provider.Price, provider.FlightStart, provider.FlightEnd));
+                        (long?)arcWeightFunction(provider), provider.FlightStart, provider.FlightEnd));
             }
 
             return planetRouteDict;
@@ -85,7 +102,7 @@ namespace DAL.App.EF.CustomRepositories
                 {
                     TravelPricesId = travelPrices.Id,
                     Routes = MapPathProviderToRouteInfoProvider(path),
-                    TotalDistanceInKilometers = path.Sum(provider => provider.Legs.RouteInfo.Distance),
+                    TotalDistanceInKilometers = path.Sum(provider => provider.Legs!.RouteInfo!.Distance),
                     TotalLengthInHours = path.Sum(provider =>
                         DateUtils.CalculateHoursBetweenDates(provider.FlightStart, provider.FlightEnd)),
                     TotalPrice = path.Sum(provider => provider.Price),
@@ -99,10 +116,10 @@ namespace DAL.App.EF.CustomRepositories
         {
             return path.Select(provider => new RouteInfoProvider()
             {
-                RouteInfoId = provider.Legs.RouteInfoId,
-                Distance = provider!.Legs.RouteInfo.Distance,
-                From = provider.Legs.RouteInfo.From.Name.ToString(),
-                To = provider.Legs.RouteInfo.To.Name.ToString(),
+                RouteInfoId = provider.Legs!.RouteInfoId,
+                Distance = provider!.Legs.RouteInfo!.Distance,
+                From = provider.Legs.RouteInfo.From!.Name.ToString(),
+                To = provider.Legs.RouteInfo.To!.Name.ToString(),
                 Provider = provider,
             }).ToList();
         }

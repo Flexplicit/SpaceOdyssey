@@ -9,5 +9,7 @@ namespace App.Domain.TravelModels
     {
         public DateTime ValidUntil { get; set; }
         public List<Legs>? Legs { get; set; } = null!;
+
+        public List<Reservation>? Reservations { get; set; } = null!;
     }
 }

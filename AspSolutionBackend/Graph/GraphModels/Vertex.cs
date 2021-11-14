@@ -33,17 +33,6 @@ namespace Graph.GraphModels
 
         public Arc<TVertex, TArc>? GetFirstArc() => AdjacentArcs.Count == 0 ? null : AdjacentArcs[0];
 
-        // public void SetAdjacentArcsInfoToInfinity() => AdjacentArcs.ForEach(arc => arc.Weight = int.MaxValue / 3);
-        public Arc<TVertex, TArc>? FindMinWeightArcWhoseParentIsNotVisited()
-        {
-            if (AdjacentArcs.Count == 0) return null;
-            var res = AdjacentArcs
-                .Where(x => !x.Target!.Visited)
-                .ToList();
-            if (!res.Any()) return null;
-
-            var min = res.Min(x => x.Weight);
-            return AdjacentArcs.First(x => x.Weight == min);
-        }
+        public DateTime CurrentTime { get; set; }
     }
 }

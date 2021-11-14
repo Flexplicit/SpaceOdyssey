@@ -13,7 +13,6 @@ namespace PublicApiDTO.Mappers
         }
 
         //TODO: do this
-
         // public DomainDTO.RouteInfoData MapPublicAddRouteInfoToDomain(AddRouteInfoData addRouteInfoData)
         // {
         //     return new DomainDTO.RouteInfoData

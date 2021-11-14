@@ -11,6 +11,10 @@ namespace DAL.App.EF
         {
         }
 
+        public AppDbContext() : base()
+        {
+        }
+
         public virtual DbSet<Reservation> Reservations { get; set; } = null!;
         public virtual DbSet<RouteInfoData> RouteInfoData { get; set; } = null!;
 
@@ -30,9 +34,16 @@ namespace DAL.App.EF
             var cascadeFKs = modelBuilder.Model.GetEntityTypes()
                 .SelectMany(t => t.GetForeignKeys())
                 .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
-
             foreach (var fk in cascadeFKs)
+            {
                 fk.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
+            modelBuilder.Entity<Company>()
+                .HasMany(company => company.Providers)
+                .WithOne(provider => provider.Company!)
+                .HasForeignKey(prov => prov.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

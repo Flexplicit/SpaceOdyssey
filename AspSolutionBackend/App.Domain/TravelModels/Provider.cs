@@ -15,7 +15,7 @@ namespace App.Domain.TravelModels
         public List<RouteInfoData>? RouteInfoData { get; set; }
 
 
-        public Legs Legs { get; set; } = null!;
+        public Legs? Legs { get; set; } = null!;
         public Guid LegsId { get; set; }
     }
 }

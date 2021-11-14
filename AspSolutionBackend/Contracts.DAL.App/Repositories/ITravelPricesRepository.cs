@@ -8,6 +8,13 @@ using Contracts.DAL.Base.Repositories;
 
 namespace Contracts.DAL.App.Repositories
 {
+    public enum ESortBy
+    {
+        Price,
+        Distance,
+        Time
+    }
+
     public interface ITravelPricesRepository : IBaseRepository<TravelPrices>
     {
         Task<TravelPrices> GetLatestTravelPriceAsync();
@@ -15,7 +22,9 @@ namespace Contracts.DAL.App.Repositories
 
     public interface ICustomTravelPricesRepository : ITravelPricesRepository
     {
-        Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to, DateTime startDate);
+        Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to, DateTime startDate, ESortBy sortBy,
+            List<string> providers);
+
         Task<bool> IsTravelPriceValid(Guid travelPriceId);
     }
 }

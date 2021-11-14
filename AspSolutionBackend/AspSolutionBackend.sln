@@ -32,6 +32,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts.BLL.Base", "Contr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{F192FD81-D8BA-4A04-A241-48C824A3B6F5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27087BA2-9C35-4423-834F-6BA25D84E15B}"
+ProjectSection(SolutionItems) = preProject
+	.dockerignore = .dockerignore
+	.gitignore = .gitignore
+	Directory.Build.props = Directory.Build.props
+	Dockerfile = Dockerfile
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

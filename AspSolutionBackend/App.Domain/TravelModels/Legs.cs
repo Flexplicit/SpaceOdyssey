@@ -7,7 +7,7 @@ namespace App.Domain.TravelModels
     public class Legs : DomainEntityId
     {
         public List<Provider>? Providers { get; set; } = null!;
-        public RouteInfo RouteInfo { get; set; } = null!;
+        public RouteInfo? RouteInfo { get; set; } = null!;
         public Guid RouteInfoId { get; set; }
 
         public TravelPrices? TravelPrices { get; set; }

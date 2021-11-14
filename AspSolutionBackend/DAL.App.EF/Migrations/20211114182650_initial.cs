@@ -77,8 +77,8 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FromId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ToId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FromId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ToId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ReservationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Distance = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -149,7 +149,7 @@ namespace DAL.App.EF.Migrations
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Providers_Legs_LegsId",
                         column: x => x.LegsId,

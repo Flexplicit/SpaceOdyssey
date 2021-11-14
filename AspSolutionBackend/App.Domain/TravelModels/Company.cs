@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Domain.Base;
 
 namespace App.Domain.TravelModels
@@ -9,5 +10,7 @@ namespace App.Domain.TravelModels
     
         public Reservation? Reservation { get; set; }
         public Guid? ReservationId { get; set; }
+
+        public List<Provider>? Providers { get; set; }
     }
 }

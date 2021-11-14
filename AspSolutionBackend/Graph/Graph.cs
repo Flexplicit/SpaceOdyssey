@@ -17,7 +17,7 @@ namespace Graph
 
 
         private void DijkstraInitialization(IEnumerable<Vertex<TVertex, TArc>> vertices,
-            Vertex<TVertex, TArc> start)
+            Vertex<TVertex, TArc> start, DateTime startTime)
         {
             foreach (var v in vertices)
             {
@@ -26,6 +26,7 @@ namespace Graph
                 v.VPrev = null;
             }
 
+            start.CurrentTime = startTime;
             start.DistanceFromStartVertex = 0;
         }
 
@@ -53,7 +54,13 @@ namespace Graph
 
             var permanentShortestPaths = new List<List<Arc<TVertex, TArc>>>();
             var shortestPath1 = DijkstraPath(from, to, start);
+
+            if (shortestPath1.Count == 0) return permanentShortestPaths;
+
+
             permanentShortestPaths.Add(shortestPath1);
+
+            // return permanentShortestPaths;
             var candidatePaths = new List<List<Arc<TVertex, TArc>>>();
 
 
@@ -71,10 +78,11 @@ namespace Graph
 
                     // We restore removed arcs and add result to temporary path list.
                     arc.IsConnectedToGraph = true;
-                    candidatePaths.Add(candidateRes);
+                    if (candidateRes.Count > 0) candidatePaths.Add(candidateRes);
                 }
 
                 // We compare and pick the minWeighed path
+                if (candidatePaths.Count == 0) continue;
                 var candidatePathMinWeightIndex = GetMinWeightSumIndex(candidatePaths);
                 permanentShortestPaths.Add(candidatePaths[candidatePathMinWeightIndex]);
                 candidatePaths.RemoveRange(0, candidatePaths.Count);
@@ -105,7 +113,7 @@ namespace Graph
 
 
         /// <summary>
-        /// Finds the shortest path between 2 nodes in a graph.
+        /// Finds the shortest path between 2 nodes in a graph. Works in a Directed cyclic multigraph
         /// </summary>
         /// <param name="from">From vertex which will be added as the first vertex.</param>
         /// <param name="to">To vertex where we will be traveling to.</param>
@@ -113,9 +121,7 @@ namespace Graph
             DateTime start)
         {
             var vertices = GetAllVertices();
-            DijkstraInitialization(vertices, from);
-
-            // var result = new HashSet<Vertex<TVertex, TArc>>();
+            DijkstraInitialization(vertices, from, start);
 
             var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(VertexCount);
             foreach (var ver in vertices)
@@ -123,32 +129,36 @@ namespace Graph
                 pq.Enqueue(ver, ver.DistanceFromStartVertex);
             }
 
-
             var currentDate = start;
             while (pq.Count > 0)
             {
                 var uVertex = pq.Dequeue();
-                // result.Add(uVertex);
+                if (uVertex.Id == to.Id) continue;
                 if (uVertex.AdjacentArcs.Count > 0)
                 {
                     var pathExists = false;
 
                     using var uArcs = uVertex.AdjacentArcs.OrderBy(arc => arc.Weight).GetEnumerator();
-
-                    while (uArcs.MoveNext())
                     {
-                        var curr = uArcs.Current;
-                        if (!curr.IsConnectedToGraph || curr.ArcStart!.Value < currentDate || curr.Checked) continue;
+                        while (uArcs.MoveNext())
+                        {
+                            var curr = uArcs.Current;
+                            if (curr.VPrev != null && uVertex.Id == curr.VPrev.Id) continue;
+                            if (!curr.IsConnectedToGraph || curr.ArcStart!.Value < currentDate || curr.Checked)
+                                continue;
 
-                        var vVertex = curr.Target!;
-                        DijkstraArcRelaxation(uVertex, vVertex, curr);
-                        pq.UpdatePriority(vVertex, vVertex.DistanceFromStartVertex);
-                        pathExists = true;
+                            var vVertex = curr.Target!;
+                            DijkstraArcRelaxation(uVertex, vVertex, curr);
+                            pq.UpdatePriority(vVertex, vVertex.DistanceFromStartVertex);
+                            pathExists = true;
 
-
-                        // We save older Date so we can move back later if necessary
-                        curr.DatePreviousEnd = currentDate;
-                        currentDate = curr.ArcEnd!.Value;
+                            // We save older Date so we can move back later if necessary
+                            curr.DatePreviousEnd = currentDate;
+                        }
+                    }
+                    if (pq.Count > 0 && pq.First.ChosenArc != null)
+                    {
+                        currentDate = pq.First.ChosenArc!.ArcEnd!.Value;
                     }
 
                     if (!pathExists && from.Id == uVertex.Id)
@@ -156,17 +166,26 @@ namespace Graph
                         continue;
                     }
 
+                    if (to.ChosenArc != null)
+                    {
+                        break;
+                    }
 
                     if (!pathExists)
                     {
-                        if (uVertex.ChosenArc == null) // think about this one
+                        if (uVertex.ChosenArc == null)
                         {
                             break;
                         }
 
+                        //handle cycles
+                        if (uVertex.Id == uVertex.ChosenArc.VPrev!.Id) break;
+
+                        // reverse 2 nodes back into the queue because we cannot travel further due to time constraint
                         if (from.Id == uVertex.Id) continue;
                         uVertex.DistanceFromStartVertex = int.MaxValue / 2;
                         uVertex.ChosenArc!.Checked = true;
+
                         pq.Enqueue(uVertex, uVertex.DistanceFromStartVertex);
                         pq.Enqueue(uVertex.VPrev!, uVertex.VPrev!.DistanceFromStartVertex);
                         currentDate = uVertex.ChosenArc.DatePreviousEnd;

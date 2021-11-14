@@ -54,15 +54,14 @@ namespace DAL.App.EF.Repositories
                 // .Where(priceList => priceList.ValidUntil > DateTime.Now)
                 .Include(travelPrice => travelPrice.Legs)
                 .ThenInclude(leg => leg.RouteInfo)
-                .ThenInclude(route => route.From)
+                .ThenInclude(route => route!.From)
                 .Include(travelPrice => travelPrice.Legs)
                 .ThenInclude(leg => leg.RouteInfo)
-                .ThenInclude(route => route.To)
+                .ThenInclude(route => route!.To)
                 .Include(travelPrice => travelPrice.Legs)
                 .ThenInclude(leg => leg.Providers)
                 .ThenInclude(provider => provider.Company)
-                .Where(travelPrices =>
-                    travelPrices.Legs!.Any(leg => leg.Providers!.Any(provider => provider.FlightStart > startDate)))
+                .Where(travelPrices => travelPrices.Legs!.Any(leg => leg.Providers!.Any(provider => provider.FlightStart > startDate)))
                 .FirstOrDefaultAsync();
         }
     }

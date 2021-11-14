@@ -1,9 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using App.Domain.TravelModels;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
+using Utils;
 
 namespace Services.ApiServices
 {
@@ -24,17 +28,17 @@ namespace Services.ApiServices
             var response = await _client.GetAsync(TravelUrl);
 
             var responseJson = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
-            
+
 
             return DeserializeStreamAsync<TravelPrices>(responseJson);
         }
 
         private static T DeserializeStreamAsync<T>(string responseJson)
         {
-            JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true, };
+            JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true };
+            jsonOptions.Converters.Add(new DateTimeConverterUsingDateTimeParse());
+
             return JsonSerializer.Deserialize<T>(responseJson, jsonOptions)!;
-            
-           
         }
     }
 }

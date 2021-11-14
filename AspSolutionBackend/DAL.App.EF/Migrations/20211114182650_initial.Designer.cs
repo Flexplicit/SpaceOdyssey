@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211108221500_initial")]
+    [Migration("20211114182650_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -145,13 +145,13 @@ namespace DAL.App.EF.Migrations
                     b.Property<long>("Distance")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid>("FromId")
+                    b.Property<Guid?>("FromId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ReservationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ToId")
+                    b.Property<Guid?>("ToId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -236,9 +236,9 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("App.Domain.TravelModels.Provider", b =>
                 {
                     b.HasOne("App.Domain.TravelModels.Company", "Company")
-                        .WithMany()
+                        .WithMany("Providers")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("App.Domain.TravelModels.Legs", "Legs")
@@ -255,7 +255,7 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("App.Domain.TravelModels.Reservation", b =>
                 {
                     b.HasOne("App.Domain.TravelModels.TravelPrices", "TravelPrice")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("TravelPricesId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -267,9 +267,7 @@ namespace DAL.App.EF.Migrations
                 {
                     b.HasOne("App.Domain.TravelModels.Planet", "From")
                         .WithMany()
-                        .HasForeignKey("FromId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("FromId");
 
                     b.HasOne("App.Domain.TravelModels.Reservation", "Reservation")
                         .WithMany()
@@ -277,9 +275,7 @@ namespace DAL.App.EF.Migrations
 
                     b.HasOne("App.Domain.TravelModels.Planet", "To")
                         .WithMany()
-                        .HasForeignKey("ToId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("ToId");
 
                     b.Navigation("From");
 
@@ -315,6 +311,11 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("RouteInfo");
                 });
 
+            modelBuilder.Entity("App.Domain.TravelModels.Company", b =>
+                {
+                    b.Navigation("Providers");
+                });
+
             modelBuilder.Entity("App.Domain.TravelModels.Legs", b =>
                 {
                     b.Navigation("Providers");
@@ -338,6 +339,8 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("App.Domain.TravelModels.TravelPrices", b =>
                 {
                     b.Navigation("Legs");
+
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

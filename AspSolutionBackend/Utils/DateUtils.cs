@@ -8,5 +8,10 @@ namespace Utils
         {
             return (end - start).TotalHours;
         }
+
+        public static double CalculateSecondsBetweenDates(DateTime start, DateTime end)
+        {
+            return (end - start).TotalSeconds;
+        }
     }
 }

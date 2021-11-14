@@ -65,6 +65,8 @@ namespace WebApp
                 );
             });
 
+            services.AddSingleton<DataInit, DataInit>();
+            
             //Support for api versioning
             services.AddApiVersioning(options => { options.ReportApiVersions = true; });
             //Support for m2m api docs
@@ -128,8 +130,10 @@ namespace WebApp
 
         private static async Task SetupAppData(IApplicationBuilder app, IConfiguration configuration)
         {
-            using var serviceScope =
-                app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+            
+            
+            using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             await using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
             if (ctx == null) return;
 
@@ -151,6 +155,13 @@ namespace WebApp
             {
                 Console.WriteLine(@"Seed app data database");
                 await DataInit.SeedData(ctx);
+                Console.WriteLine(@" - done");
+            }
+            if (configuration.GetValue<bool>("AppData:UpdateDataAfterExpired"))
+            {
+                Console.WriteLine(@"Updating app data");
+                
+                await new DataInit().UpdateData(app.ApplicationServices);
                 Console.WriteLine(@" - done");
             }
         }
