@@ -31,7 +31,6 @@ export class BaseServices {
 
   static async GetById<TEntity>(endpoint: string, id: string): Promise<IFetchResponse<TEntity>> {
     let url = `${endpoint}/${id}`
-    console.log(url)
     try {
       let res = await this.axios.get<TEntity>(url)
       return this.FetchResponse(res)
@@ -40,7 +39,7 @@ export class BaseServices {
     }
   }
 
-  private static async FetchResponse<TEntity>(res: AxiosResponse<TEntity, any>): Promise<IFetchResponse<TEntity>> {
+  protected static async FetchResponse<TEntity>(res: AxiosResponse<TEntity, any>): Promise<IFetchResponse<TEntity>> {
     return {
       statusCode: res.status,
       data: res.data,

@@ -12,8 +12,8 @@ const FormErrorMessage = ({ errors }: IPropsState) => {
         <div className="error-message">
           <div className="alert alert-danger" role="alert">
             <ul>
-              {errors.map((error) => (
-                <li>{error}</li>
+              {errors.map((error, index) => (
+                <li key={index}>{error}</li>
               ))}
             </ul>
           </div>

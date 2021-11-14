@@ -35,7 +35,6 @@ const PlanetRouteDescription = ({ routeInfoId, from, to, distance, provider }: I
           {convertStringToDateAndHours(provider.flightEnd)} - {to}
         </span>
       </div>
-      <div className="layover modal-info-smallinfo">Layover: 17h 30min in Earth</div>
     </div>
   )
 }

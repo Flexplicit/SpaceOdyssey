@@ -5,6 +5,7 @@ import Modal from 'react-modal'
 import PlanetRouteDescription from '../planet-route-description/PlanetRouteDescription'
 import { IRouteInfoProvider } from '../../domain/IRouteInfoProvider'
 import { ICustomRouteModalProps } from '../../views/reservation-result-page/ReservationResultPage'
+import { getHoursBetweenDates, getHumanReadableTimeFromDifferenceBetweenDates } from '../../utils/date-conversion'
 
 interface ICustomProps {
   modalState: ICustomRouteModalProps
@@ -21,15 +22,17 @@ const CustomRouteModal = ({ modalState, changeState }: ICustomProps) => {
           <button type="button" className="btn-close" onClick={closeModal}></button>
         </div>
         <div className="modal-body">
-          {modalState?.routes?.map((routeObj) => (
-            <PlanetRouteDescription
-              key={routeObj.routeInfo.id}
-              routeInfoId={routeObj.routeInfo.id}
-              from={routeObj.routeInfo.from.name}
-              to={routeObj.routeInfo.to.name}
-              distance={routeObj.routeInfo.distance}
-              provider={routeObj.provider}
-            />
+          {modalState?.routes?.map((routeObj, index, array) => (
+            <div key={routeObj.routeInfo.id}>
+              <div className="layover modal-info-smallinfo">Layover: iiii</div>
+              <PlanetRouteDescription
+                routeInfoId={routeObj.routeInfo.id}
+                from={routeObj.routeInfo.from.name}
+                to={routeObj.routeInfo.to.name}
+                distance={routeObj.routeInfo.distance}
+                provider={routeObj.provider}
+              />
+            </div>
           ))}
         </div>
         <div className="modal-footer">

@@ -10,10 +10,10 @@ const Header = () => {
         <img src={Logo} height="100px" width="100px" />
       </Link>
       <div className="options">
-        <Link to="/" className="option">
-          My Reservations
+        <Link to="/reservations" className="option hvr-grow">
+          Reservations
         </Link>
-        <Link to="/" className="option">
+        <Link to="/" className="option hvr-grow">
           Travels
         </Link>
       </div>

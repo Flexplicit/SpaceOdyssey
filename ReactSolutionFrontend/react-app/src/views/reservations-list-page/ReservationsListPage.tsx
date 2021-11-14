@@ -56,7 +56,7 @@ const ReservationsListPage = () => {
               <td>{`${reservation.firstName} ${reservation.lastName}`}</td>
               <td>{priceFormatter.format(reservation.totalQuotedPrice)}</td>
               <td>{getHumanReadableTimeFromHours(reservation.totalQuotedTravelTimeInMinutes)}</td>
-              <td>{10} km</td>
+              <td>{reservation.routeInfoData.reduce((prev, curr) => prev + curr.routeInfo.distance, 0)} km</td>
               <td>
                 <img
                   src={CloudArrow}
