@@ -24,7 +24,9 @@ namespace Services.ApiServices
 
             var responseJson = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
 
-            return DeserializeWithIsoDates<TravelPrices>(responseJson);
+            var res = DeserializeWithIsoDates<TravelPrices>(responseJson);
+            res.ValidUntil = DateConvertors.ConvertDateTimeToEstonian(res.ValidUntil);
+            return res;
         }
 
         private static T DeserializeWithIsoDates<T>(string responseJson)

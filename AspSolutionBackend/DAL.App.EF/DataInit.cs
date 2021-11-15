@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,7 +85,7 @@ namespace DAL.App.EF
 
         public static void UpdateData(IServiceProvider serviceProvider)
         {
-            var timer = new Timer(30000);
+            var timer = new Timer(10000);
             var autoEvent = new AutoResetEvent(true);
 
 
@@ -100,8 +101,10 @@ namespace DAL.App.EF
             await using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
             if (ctx == null) return;
 
+            var test = TravelPricesApi.GetCurrentTravelPrices().Result;
+            
             var currentPriceList = await GetCurrentPrices(ctx);
-            if (currentPriceList.Count == 15)
+            if (currentPriceList.Count == 11)
             {
                 Console.WriteLine("----Deleting old data----");
                 var priceListToDelete = await GetTravelPriceWithAllPaths(currentPriceList[^1].Id, ctx);
