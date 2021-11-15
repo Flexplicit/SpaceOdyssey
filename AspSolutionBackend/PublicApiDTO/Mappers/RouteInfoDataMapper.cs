@@ -12,21 +12,12 @@ namespace PublicApiDTO.Mappers
         {
         }
 
-        //TODO: do this
-        // public DomainDTO.RouteInfoData MapPublicAddRouteInfoToDomain(AddRouteInfoData addRouteInfoData)
-        // {
-        //     return new DomainDTO.RouteInfoData
-        //     {
-        //         ProviderId = addRouteInfoData.ProviderId,
-        //         RouteInfoId = addRouteInfoData.RouteInfoId
-        //     };
-        // }
         public DomainDTO.RouteInfoData MapPublicAddRouteInfoToDomain(AddRouteInfoProvider addRouteInfoData)
         {
             return new DomainDTO.RouteInfoData
             {
                 ProviderId = addRouteInfoData.ProviderId,
-                RouteInfoId = addRouteInfoData.RouteInfoId
+                RouteInfoId = addRouteInfoData.RouteInfoId,
             };
         }
     }

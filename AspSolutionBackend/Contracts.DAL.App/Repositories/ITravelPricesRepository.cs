@@ -25,6 +25,6 @@ namespace Contracts.DAL.App.Repositories
         Task<List<TravelData>> GetRouteTravelDataAsync(EPlanet from, EPlanet to, DateTime startDate, ESortBy sortBy,
             List<string> providers);
 
-        Task<bool> IsTravelPriceValid(Guid travelPriceId);
+        // Task<bool> IsTravelPriceValid(Guid travelPriceId);
     }
 }

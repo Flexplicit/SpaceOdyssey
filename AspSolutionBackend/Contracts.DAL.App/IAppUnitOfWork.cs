@@ -16,5 +16,7 @@ namespace Contracts.DAL.App
         IBaseRepository<RouteInfoData, Guid> RouteInfoData { get; }
         
         ICompanyRepository Companies { get; }
+        
+        IProviderRepository Providers { get; }
     }
 }

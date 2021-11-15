@@ -105,12 +105,17 @@ namespace DAL.App.EF
                     latestPriceList = await SeedData(ctx);
                     Console.WriteLine("----Database database seeded----");
                 }
+                Console.WriteLine(DateTime.Now);
+                Console.WriteLine(DateTime.Now > latestPriceList.ValidUntil);
+                Console.WriteLine(latestPriceList.Id);
             }
             else
             {
+                Console.WriteLine("Seeding Data");
                 latestPriceList = await SeedData(ctx);
             }
 
+            
             var timeTillNextUpdateInMillis = DateUtils.CalculateMillisecondsBetweenDates(DateTime.Now, latestPriceList.ValidUntil);
             timer.Interval = timeTillNextUpdateInMillis + 5000; // 5 extra seconds just in case
             Console.WriteLine($"Next update in {DateUtils.MillisecondsToMinutes(timeTillNextUpdateInMillis)} minutes.");

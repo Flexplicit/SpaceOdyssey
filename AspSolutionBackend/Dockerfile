@@ -1,3 +1,4 @@
+
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as BUILD
 WORKDIR /source
 
@@ -5,6 +6,10 @@ COPY *.sln .
 COPY Directory.Build.props .
 
 
+#timezone problem
+RUN apt-get update -y
+RUN apt-get install -y tzdata
+ENV TZ Europe/Tallinn
 
 
 # Copy all the project files
@@ -53,6 +58,7 @@ COPY WebApp/. ./WebApp/
 
 # Tests
 COPY Tests/. ./Tests
+
 
 WORKDIR /source/WebApp
 

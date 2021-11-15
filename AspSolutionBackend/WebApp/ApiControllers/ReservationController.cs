@@ -61,13 +61,15 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Reservation>> PostReservation(AddReservation reservation)
         {
-            if (!await _uow.TravelPrices.IsTravelPriceValid(reservation.TravelPricesId))
+            var providerIds = reservation.Routes.Select(route => route.ProviderId).ToList();
+            var providers =
+                await _uow.Providers.GetProviderByIdAndConfirmIfItExistsInTravelPrice(providerIds,
+                    reservation.TravelPricesId);
+            if (providers.Count == 0 || !await _uow.TravelPrices.IsTravelPriceValid(reservation.TravelPricesId))
             {
                 return NotFound("Given price list is not valid");
             }
-
-            var addedReservation =
-                _uow.Reservations.Add(_reservationMapper.MapPublicAddedReservationToDomain(reservation));
+            var addedReservation = _uow.Reservations.Add(_reservationMapper.MapPublicAddedReservationToDomain(reservation, providers));
 
             reservation.Routes.ForEach(route =>
             {
