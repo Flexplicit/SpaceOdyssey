@@ -24,8 +24,12 @@ const CustomRouteModal = ({ modalState, changeState }: ICustomProps) => {
         <div className="modal-body">
           {modalState?.routes?.map((routeObj, index, array) => (
             <div key={routeObj.routeInfo.id}>
-              <div className="layover modal-info-smallinfo">Layover: iiii</div>
-              <PlanetRouteDescription
+              {
+                index > 0 ?
+                  <div className="layover modal-info-smallinfo">Layover:
+                    {getHumanReadableTimeFromDifferenceBetweenDates(array[index - 1].provider.flightEnd, array[index].provider.flightStart)}</div>
+                  : null
+              }              <PlanetRouteDescription
                 routeInfoId={routeObj.routeInfo.id}
                 from={routeObj.routeInfo.from.name}
                 to={routeObj.routeInfo.to.name}

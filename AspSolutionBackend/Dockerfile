@@ -9,8 +9,16 @@ COPY Directory.Build.props .
 #timezone problem
 RUN apt-get update -y
 RUN apt-get install -y tzdata
-ENV TZ Europe/Tallinn
+RUN apt-get install sudo
 
+
+RUN echo "America/Los_Angeles" > /etc/timezone
+RUN ls -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+RUN dpkg-reconfigure -f noninteractive tzdata
+
+#RUN sudo rm -rf /etc/localtime
+#RUN ln -s /usr/share/zoneinfo/Europe/Tallinn /etc/localtime 
+#RUN date
 
 # Copy all the project files
 # Base projects

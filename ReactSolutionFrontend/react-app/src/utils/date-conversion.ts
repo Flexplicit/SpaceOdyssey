@@ -31,10 +31,10 @@ export const getHoursBetweenDates = (start: Date, end: Date) => {
 
 export const getHumanReadableTimeFromDifferenceBetweenDates = (startDate: string, endDate: string): string => {
   let ms = new Date(endDate).getTime() - new Date(startDate).getTime()
-  let seconds = (ms / 1000).toFixed(0)
-  let minutes = (ms / (1000 * 60)).toFixed(0)
-  let hours = (ms / (1000 * 60 * 60)).toFixed(0)
-  let days = (ms / (1000 * 60 * 60 * 24)).toFixed(0)
+  let seconds = Math.floor(ms / 1000).toFixed(0)
+  let minutes = Math.floor(ms / (1000 * 60)).toFixed(0)
+  let hours = Math.floor(ms / (1000 * 60 * 60)).toFixed(0)
+  let days = Math.floor(ms / (1000 * 60 * 60 * 24)).toFixed(0)
 
   if (parseInt(seconds) < 60) return `${seconds} Sec`
   else if (parseInt(minutes) < 60) return `${minutes} Mins`
