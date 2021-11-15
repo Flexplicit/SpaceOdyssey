@@ -17,7 +17,7 @@ function App() {
           <Route exact path="/" component={Homepage} />
           <Route exact path="/search/planetroute/:from/:to/:date/:sortBy/:companies" component={TravelSearchResult} />
           <Route exact path="/reservations/add" component={ReservationPage} />
-          <Route exact path="/reservations/success/:id" component={ReservationResultPage} />
+          <Route exact path="/reservation/success/:id" component={ReservationResultPage} />
           <Route exact path="/reservations/" component={ReservationsListPage} />
           <Route component={ErrorPage} />
         </Switch>

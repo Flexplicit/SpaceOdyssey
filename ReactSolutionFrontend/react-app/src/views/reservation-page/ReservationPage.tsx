@@ -22,7 +22,7 @@ const ReservationPage = () => {
       }),
     } as IReservationAdd
     let res = await BaseServices.PostAsync('/reservation', reservation)
-    if (res.statusCode === 200) {
+    if (res.statusCode === 201) {
       let resData = res.data as IReservation
       history.push(`/reservation/success/${resData.id}`)
     }
