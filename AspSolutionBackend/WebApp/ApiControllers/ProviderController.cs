@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Contracts.DAL.App;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PublicApiDTO.Mappers.MappingProfiles;
 using PublicApiDTO.TravelModels.v1;
@@ -21,6 +23,9 @@ namespace WebApp.ApiControllers
             _companyMapper = new CompanyMapper(mapper);
         }
 
+        [HttpGet]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<Company>), StatusCodes.Status200OK)]
         public ActionResult<Company> GetAllDistinctCompanies()
             => Ok(_uow
                 .Companies

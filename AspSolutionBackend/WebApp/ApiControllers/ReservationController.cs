@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Contracts.DAL.App;
+using Microsoft.AspNetCore.Http;
 using PublicApiDTO.Mappers;
 using PublicApiDTO.TravelModels.v1;
 
@@ -29,6 +30,8 @@ namespace WebApp.ApiControllers
 
         // // GET: api/Reservation
         [HttpGet]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<Reservation>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
         {
             var reservations = await _uow.Reservations.GetAllAsync();
@@ -38,6 +41,8 @@ namespace WebApp.ApiControllers
 
         // GET: api/Reservation/5
         [HttpGet("{id:guid}")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reservation), StatusCodes.Status200OK)]
         public async Task<ActionResult<Reservation>> GetReservation(Guid id)
         {
             var reservation = await _uow.Reservations.FirstOrDefaultAsync(id);
@@ -49,9 +54,11 @@ namespace WebApp.ApiControllers
             return Ok(_reservationMapper.Map(reservation));
         }
 
-        // POST: api/Reservation
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Reservation), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Reservation>> PostReservation(AddReservation reservation)
         {
             if (!await _uow.TravelPrices.IsTravelPriceValid(reservation.TravelPricesId))
@@ -59,7 +66,8 @@ namespace WebApp.ApiControllers
                 return NotFound("Given price list is not valid");
             }
 
-            var addedReservation = _uow.Reservations.Add(_reservationMapper.MapPublicAddedReservationToDomain(reservation));
+            var addedReservation =
+                _uow.Reservations.Add(_reservationMapper.MapPublicAddedReservationToDomain(reservation));
 
             reservation.Routes.ForEach(route =>
             {
@@ -67,7 +75,7 @@ namespace WebApp.ApiControllers
                 mappedRoute.ReservationId = addedReservation.Id;
                 _uow.RouteInfoData.Add(mappedRoute);
             });
-            
+
             await _uow.SaveChangesAsync();
             return CreatedAtAction("GetReservation", new { id = addedReservation.Id },
                 _reservationMapper.Map(addedReservation));

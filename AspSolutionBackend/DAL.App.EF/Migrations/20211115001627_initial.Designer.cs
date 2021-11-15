@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211114182650_initial")]
+    [Migration("20211115001627_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,12 +126,12 @@ namespace DAL.App.EF.Migrations
                     b.Property<double>("TotalQuotedTravelTimeInMinutes")
                         .HasColumnType("float");
 
-                    b.Property<Guid>("TravelPricesId")
+                    b.Property<Guid>("TravelPriceId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TravelPricesId");
+                    b.HasIndex("TravelPriceId");
 
                     b.ToTable("Reservations");
                 });
@@ -219,13 +219,13 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("App.Domain.TravelModels.RouteInfo", "RouteInfo")
                         .WithMany()
                         .HasForeignKey("RouteInfoId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("App.Domain.TravelModels.TravelPrices", "TravelPrices")
                         .WithMany("Legs")
                         .HasForeignKey("TravelPricesId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("RouteInfo");
@@ -244,7 +244,7 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("App.Domain.TravelModels.Legs", "Legs")
                         .WithMany("Providers")
                         .HasForeignKey("LegsId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Company");
@@ -256,8 +256,8 @@ namespace DAL.App.EF.Migrations
                 {
                     b.HasOne("App.Domain.TravelModels.TravelPrices", "TravelPrice")
                         .WithMany("Reservations")
-                        .HasForeignKey("TravelPricesId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("TravelPriceId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("TravelPrice");
@@ -289,19 +289,19 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("App.Domain.TravelModels.Provider", "Provider")
                         .WithMany("RouteInfoData")
                         .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("App.Domain.TravelModels.Reservation", "Reservation")
                         .WithMany("RouteInfoData")
                         .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("App.Domain.TravelModels.RouteInfo", "RouteInfo")
                         .WithMany("RouteInfoData")
                         .HasForeignKey("RouteInfoId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Provider");

@@ -22,13 +22,13 @@ namespace DAL.App.EF.Repositories
             var res = await CreateQuery(noTracking)
                 .Include(reservation => reservation.RouteInfoData)
                 .ThenInclude(routeData => routeData.RouteInfo)
-                .ThenInclude(routeInfo => routeInfo.From)
+                .ThenInclude(routeInfo => routeInfo!.From)
                 .Include(reservation => reservation.RouteInfoData)
                 .ThenInclude(routeData => routeData.RouteInfo)
-                .ThenInclude(routeInfo => routeInfo.To)
+                .ThenInclude(routeInfo => routeInfo!.To)
                 .Include(reservation => reservation.RouteInfoData)
                 .ThenInclude(routeData => routeData.Provider)
-                .ThenInclude(provider => provider.Company)
+                .ThenInclude(provider => provider!.Company)
                 .FirstOrDefaultAsync();
 
             AddPriceAndTravelTimeFields(res);
@@ -38,9 +38,9 @@ namespace DAL.App.EF.Repositories
 
         private static void AddPriceAndTravelTimeFields(Reservation? res)
         {
-            res!.TotalQuotedPrice = res.RouteInfoData.Sum(x => x.Provider.Price);
+            res!.TotalQuotedPrice = res.RouteInfoData.Sum(x => x.Provider!.Price);
             res.TotalQuotedTravelTimeInMinutes = res.RouteInfoData.Sum(route =>
-                DateUtils.CalculateHoursBetweenDates(route.Provider.FlightStart, route.Provider.FlightEnd));
+                DateUtils.CalculateHoursBetweenDates(route.Provider!.FlightStart, route.Provider.FlightEnd));
         }
 
 
@@ -49,13 +49,13 @@ namespace DAL.App.EF.Repositories
             var query = await CreateQuery(noTracking)
                 .Include(reservation => reservation.RouteInfoData)
                 .ThenInclude(routeData => routeData.RouteInfo)
-                .ThenInclude(routeInfo => routeInfo.From)
+                .ThenInclude(routeInfo => routeInfo!.From)
                 .Include(reservation => reservation.RouteInfoData)
                 .ThenInclude(routeData => routeData.RouteInfo)
-                .ThenInclude(routeInfo => routeInfo.To)
+                .ThenInclude(routeInfo => routeInfo!.To)
                 .Include(reservation => reservation.RouteInfoData)
                 .ThenInclude(routeData => routeData.Provider)
-                .ThenInclude(provider => provider.Company)
+                .ThenInclude(provider => provider!.Company)
                 .ToListAsync();
             query.ForEach(AddPriceAndTravelTimeFields);
 

@@ -17,7 +17,6 @@ namespace Contracts.DAL.App.Repositories
 
     public interface ITravelPricesRepository : IBaseRepository<TravelPrices>
     {
-        Task<TravelPrices> GetLatestTravelPriceAsync();
     }
 
     public interface ICustomTravelPricesRepository : ITravelPricesRepository

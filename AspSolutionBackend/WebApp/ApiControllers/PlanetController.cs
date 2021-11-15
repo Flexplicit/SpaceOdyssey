@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using App.Domain.TravelModels.Enums;
 using AutoMapper;
 using Contracts.DAL.App;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PublicApiDTO.Mappers;
 using PublicApiDTO.TravelModels.v1;
@@ -26,6 +27,7 @@ namespace WebApp.ApiControllers
 
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<string>> GetPlanetNames()
         {
             var planets = _uow.Planets

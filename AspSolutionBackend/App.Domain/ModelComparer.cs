@@ -16,7 +16,6 @@ namespace App.Domain
 
         public int GetHashCode(T obj)
         {
-            // if (ReferenceEquals(obj, null)) return 0;
             var hashProductName = obj.Id == default ? default : obj.Id.GetHashCode();
             var hashProductCode = obj.Id.GetHashCode();
             return hashProductName ^ hashProductCode;

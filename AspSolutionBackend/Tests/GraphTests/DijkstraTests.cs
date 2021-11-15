@@ -29,7 +29,7 @@ namespace Tests.GraphTests
             graph.CreateArc("c10-2", vertices[2], vertices[3], 0, 3, DateTime.Now.AddDays(4),
                 DateTime.Now.AddDays(4).AddHours(2));
 
-            var res = graph.DijkstraPath(vertices[0], vertices[3], DateTime.Now);
+            var res = graph.CustomDijkstraPathFinder(vertices[0], vertices[3], DateTime.Now);
             var ids = res.Select(x => x.Id);
             ids.Should().ContainInOrder("a00-1", "b13-2", "c10-2"); // Arc ids
         }
@@ -57,7 +57,7 @@ namespace Tests.GraphTests
             graph.CreateArc("c10-2", vertices[2], vertices[3], 0, 3, DateTime.Now.AddDays(6),
                 DateTime.Now.AddDays(7).AddHours(2));
 
-            var res = graph.DijkstraPath(vertices[0], vertices[3], DateTime.Now);
+            var res = graph.CustomDijkstraPathFinder(vertices[0], vertices[3], DateTime.Now);
             var ids = res.Select(x => x.Id);
             ids.Should().ContainInOrder("a01-1", "b12-2", "c10-2"); // Arc ids
         }
@@ -83,7 +83,7 @@ namespace Tests.GraphTests
             graph.CreateArc("c10-2", vertices[2], vertices[3], 0, 3, DateTime.Now.AddDays(8),
                 DateTime.Now.AddDays(9).AddHours(2));
 
-            var res = graph.DijkstraPath(vertices[0], vertices[3], DateTime.Now);
+            var res = graph.CustomDijkstraPathFinder(vertices[0], vertices[3], DateTime.Now);
             var ids = res.Select(x => x.Id);
             ids.Should().ContainInOrder("a00-1", "b12-2", "c10-2"); // Arc ids
         }
@@ -104,7 +104,7 @@ namespace Tests.GraphTests
 
             graph.CreateArc("c10-2", vertices[2], vertices[3], 0, 3, DateTime.Now, DateTime.Now.AddDays(9).AddHours(2));
 
-            var res = graph.DijkstraPath(vertices[0], vertices[3], DateTime.Now);
+            var res = graph.CustomDijkstraPathFinder(vertices[0], vertices[3], DateTime.Now);
             res.Should().BeEmpty();
         }
 
@@ -123,7 +123,7 @@ namespace Tests.GraphTests
             graph.CreateArc("a04-1", vertices[0], vertices[1], 0, 15, DateTime.Now.AddHours(5),
                 DateTime.Now.AddDays(6));
 
-            var res = graph.DijkstraPath(vertices[0], vertices[1], DateTime.Now.AddDays(1));
+            var res = graph.CustomDijkstraPathFinder(vertices[0], vertices[1], DateTime.Now.AddDays(1));
             var ids = res.Select(x => x.Id);
             ids.Should().ContainInOrder("a03-1");
         }
@@ -133,7 +133,7 @@ namespace Tests.GraphTests
         {
             var (graph, vertices) = CreateSimpleGraphWithVertices(2);
             
-            var res = graph.DijkstraPath(vertices[0], vertices[1], DateTime.Now.AddDays(1));
+            var res = graph.CustomDijkstraPathFinder(vertices[0], vertices[1], DateTime.Now.AddDays(1));
             
             res.Should().BeEmpty();
         }

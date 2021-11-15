@@ -68,20 +68,20 @@ namespace DAL.App.EF
                 .ToList();
         }
 
-        public async Task UpdateData(IServiceProvider serviceProvider)
+        public static void UpdateData(IServiceProvider serviceProvider)
         {
-            var timer = new Timer(10000);
-            var autoEvent = new AutoResetEvent(false);
-            timer.AutoReset = false;
+            var timer = new Timer(910000);
+            var autoEvent = new AutoResetEvent(true);
+
 
             timer.Elapsed += new ElapsedEventHandler(async (_, e) => await OnTimedEvent(autoEvent, e, serviceProvider));
             timer.Start();
         }
 
-        private async Task OnTimedEvent(object stateInfo, ElapsedEventArgs e, IServiceProvider services)
+        private static async Task OnTimedEvent(object stateInfo, ElapsedEventArgs e, IServiceProvider services)
         {
-            AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
-            autoEvent.Set();
+            // AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
+            // autoEvent.Set();
             using var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
             await using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
             if (ctx == null) return;
@@ -89,34 +89,28 @@ namespace DAL.App.EF
             var currentPriceList = await GetCurrentPrices(ctx);
             if (currentPriceList.Count == 15)
             {
+                Console.WriteLine("----Deleting old data----");
                 var priceListToDelete = await GetTravelPriceWithAllPaths(currentPriceList[^1].Id, ctx);
                 await RemoveLastPriceList(ctx, priceListToDelete);
+                Console.WriteLine("----old Data deleted----");
             }
 
             var latestPriceList = currentPriceList.FirstOrDefault();
-
-
             if (latestPriceList != null)
             {
                 if (DateTime.Now > latestPriceList.ValidUntil)
                 {
-                    Console.WriteLine("Updating Database");
+                    Console.WriteLine("----Updating Database----");
                     var res = await SeedData(ctx);
-                    Console.WriteLine("Database database seeded");
+                    Console.WriteLine("----Database database seeded----");
 
                     // change timer to new date
-                }
-                else
-                {
-                    return;
                 }
             }
             else
             {
                 await SeedData(ctx);
             }
-
-            Console.WriteLine("Hello");
         }
 
         private static async Task<TravelPrices> GetTravelPriceWithAllPaths(Guid id, AppDbContext ctx)
@@ -138,64 +132,42 @@ namespace DAL.App.EF
                 .FirstAsync();
         }
 
+        //TODO: A more elegant approach would be better, refactor everything into repos and inject repo(via provider) not ctx
         private static async Task RemoveLastPriceList(DbContext ctx, TravelPrices priceList)
         {
-            // ctx.ChangeTracker.Clear();
-            // foreach (var priceListLeg in priceList.Legs!)
-            // {
-            //     foreach (var provider in priceListLeg.Providers!)
-            //     {
-            //         var company = provider.Company;
-            //         provider.Company = null;
-            //         provider.Legs = null;
-            //         ctx.Remove(company);
-            //     }
-            //
-            //     // var fromPlanetToDelete = priceListLeg.RouteInfo!.From;
-            //     // var toPlanetToDelete = priceListLeg.RouteInfo.To;
-            //
-            //
-            //     var routeInfoToDelete = priceListLeg.RouteInfo;
-            //     priceListLeg.RouteInfo = null;
-            //     priceListLeg.RouteInfoId = default;
-            //     priceListLeg.Providers = null;
-            //     ctx.Remove(routeInfoToDelete);
-            //     ctx.Remove(priceListLeg);
-            //
-            //     // priceListLeg.RouteInfo.From = null;
-            //     // priceListLeg.RouteInfo.FromId = null;
-            //     // priceListLeg.RouteInfo.ToId = null;
-            //     // priceListLeg.RouteInfo.To = null;
-            //     // ctx.Remove(fromPlanetToDelete);
-            //     // ctx.Remove(toPlanetToDelete);
-            //     //
-            //     //     priceListLeg.TravelPrices = null;
-            //     //     priceListLeg.RouteInfo = null!;
-            //     //
-            //     //     ctx.Remove(priceListLeg);
-            // }
-            //
-            // //
-            // // RemoveReservationsAndRouteInfoData(ctx, priceList);
-            // //
-            // // ctx.RemoveRange(priceList.Reservations!);
-            // // ctx.Remove(priceList);
-            // await ctx.SaveChangesAsync();
+            ctx.ChangeTracker.Clear();
+            var distinctCompanies = ExtractDistinctCompaniesFromTravelPrices(priceList);
+            var enumerable = distinctCompanies.ToList();
+            enumerable.ForEach(x => x.Providers = null);
+            ctx.RemoveRange(enumerable);
+
+            priceList.Legs!.ForEach(leg =>
+            {
+                var fromPlanet = leg.RouteInfo!.From;
+                var toPlanet = leg.RouteInfo.To;
+                var routeInfo = leg.RouteInfo;
+                leg.RouteInfo!.From = null;
+                leg.RouteInfo!.To = null;
+
+                leg.Providers = null;
+                leg.RouteInfo = null;
+                leg.TravelPrices = null;
+                ctx.RemoveRange(leg, routeInfo, fromPlanet, toPlanet);
+            });
+
+
+            RemoveReservationsAndRouteInfoData(ctx, priceList);
+            ctx.RemoveRange(priceList.Reservations!);
+            ctx.Remove(priceList);
+            await ctx.SaveChangesAsync();
         }
+
 
         private static void RemoveReservationsAndRouteInfoData(DbContext ctx, TravelPrices priceList)
         {
             foreach (var reservation in priceList.Reservations!)
             {
-                foreach (var routeInfoData in reservation.RouteInfoData)
-                {
-                    var routeInfoToDelete = routeInfoData.RouteInfo;
-                    routeInfoData.Provider = null!;
-                    routeInfoData.Reservation = null!;
-                    routeInfoData.RouteInfo = null!;
-                    ctx.Remove(routeInfoToDelete);
-                }
-
+                reservation.RouteInfoData = null;
                 reservation.TravelPrice = null;
                 ctx.Remove(reservation);
             }

@@ -17,7 +17,7 @@ namespace PublicApiDTO.Mappers
         {
             return new Reservation
             {
-                TravelPricesId = addReservation.TravelPricesId,
+                TravelPriceId = addReservation.TravelPricesId,
                 FirstName = addReservation.FirstName,
                 LastName = addReservation.LastName
             };

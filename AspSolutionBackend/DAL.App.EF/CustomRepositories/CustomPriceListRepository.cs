@@ -25,7 +25,7 @@ namespace DAL.App.EF.CustomRepositories
         {
             var query = CreateQuery(true);
             var travelPrices = await QueryTravelData(query, startDate);
-
+            if (travelPrices == null) return new List<TravelData>();
             FilterProviders(travelPrices, providers);
 
 
@@ -111,7 +111,6 @@ namespace DAL.App.EF.CustomRepositories
             );
         }
 
-        //TODO : Routeinfo and provider only?
         private static List<RouteInfoProvider> MapPathProviderToRouteInfoProvider(List<Provider> path)
         {
             return path.Select(provider => new RouteInfoProvider()

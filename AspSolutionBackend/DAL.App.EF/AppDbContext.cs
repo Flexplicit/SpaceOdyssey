@@ -36,13 +36,25 @@ namespace DAL.App.EF
                 .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
             foreach (var fk in cascadeFKs)
             {
-                fk.DeleteBehavior = DeleteBehavior.Restrict;
+                fk.DeleteBehavior = DeleteBehavior.NoAction;
             }
 
             modelBuilder.Entity<Company>()
                 .HasMany(company => company.Providers)
                 .WithOne(provider => provider.Company!)
                 .HasForeignKey(prov => prov.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<RouteInfoData>()
+                .HasOne(routeInfoData => routeInfoData.Provider)
+                .WithMany(provider => provider!.RouteInfoData!)
+                .HasForeignKey(prov => prov.ProviderId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            
+            modelBuilder.Entity<Reservation>()
+                .HasOne(reservation => reservation.TravelPrice)
+                .WithMany(priceList => priceList!.Reservations!)
+                .HasForeignKey(prov => prov.TravelPriceId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

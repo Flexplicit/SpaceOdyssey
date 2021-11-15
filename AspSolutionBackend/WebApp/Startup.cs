@@ -161,7 +161,7 @@ namespace WebApp
             {
                 Console.WriteLine(@"Updating app data");
                 
-                await new DataInit().UpdateData(app.ApplicationServices);
+                DataInit.UpdateData(app.ApplicationServices);
                 Console.WriteLine(@" - done");
             }
         }

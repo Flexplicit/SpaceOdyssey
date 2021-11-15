@@ -53,7 +53,7 @@ namespace Graph
             }
 
             var permanentShortestPaths = new List<List<Arc<TVertex, TArc>>>();
-            var shortestPath1 = DijkstraPath(from, to, start);
+            var shortestPath1 = CustomDijkstraPathFinder(from, to, start);
 
             if (shortestPath1.Count == 0) return permanentShortestPaths;
 
@@ -72,7 +72,7 @@ namespace Graph
                 {
                     // we temporary remove chosen arc then run dijkstra again
                     arc.IsConnectedToGraph = false;
-                    var candidateRes = DijkstraPath(from, to, start);
+                    var candidateRes = CustomDijkstraPathFinder(from, to, start);
 
                     if (candidateRes.Count < 0) continue;
 
@@ -113,11 +113,11 @@ namespace Graph
 
 
         /// <summary>
-        /// Finds the shortest path between 2 nodes in a graph. Works in a Directed cyclic multigraph
+        /// Finds the shortest path between 2 nodes in a graph. Works in a Directed cyclic multigraph with time constraints
         /// </summary>
         /// <param name="from">From vertex which will be added as the first vertex.</param>
         /// <param name="to">To vertex where we will be traveling to.</param>
-        public List<Arc<TVertex, TArc>> DijkstraPath(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
+        public List<Arc<TVertex, TArc>> CustomDijkstraPathFinder(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
             DateTime start)
         {
             var vertices = GetAllVertices();
