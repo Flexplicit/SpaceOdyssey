@@ -31,14 +31,7 @@ namespace DAL.App.EF.CustomRepositories
 
             var graph = new Graph<EPlanet, Provider>("RouteGraph");
 
-            Func<Provider, double> arcWeightFunc = sortBy switch
-            {
-                ESortBy.Time => provider =>
-                    DateUtils.CalculateSecondsBetweenDates(provider.FlightStart, provider.FlightEnd),
-                ESortBy.Distance => provider => provider.Legs!.RouteInfo!.Distance,
-                ESortBy.Price => provider => provider.Price,
-                _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, "Cannot find weight function")
-            };
+            Func<Provider, double> arcWeightFunc = GetArcWeightFunc(sortBy);
 
             var planetRouteDict = AddVerticesAndArcsToGraph(travelPrices, graph, arcWeightFunc);
 
@@ -55,19 +48,23 @@ namespace DAL.App.EF.CustomRepositories
             return travelDataList;
         }
 
+        private static Func<Provider, double> GetArcWeightFunc(ESortBy sortBy)
+        {
+            return sortBy switch
+            {
+                ESortBy.Time => provider => DateUtils.CalculateSecondsBetweenDates(provider.FlightStart, provider.FlightEnd),
+                ESortBy.Distance => provider => provider.Legs!.RouteInfo!.Distance,
+                ESortBy.Price => provider => provider.Price,
+                _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, "Cannot find weight function")
+            };
+        }
+
         private static void FilterProviders(TravelPrices travelPrices, ICollection<string> providers)
         {
             travelPrices?.Legs?.ForEach(leg =>
                 leg.Providers?.RemoveAll(prov => !providers.Contains(prov.Company?.Name ?? "")));
         }
-
-        public async Task<bool> IsTravelPriceValid(Guid travelPriceId)
-        {
-            var result = await FirstOrDefaultAsync(travelPriceId);
-            return result != null && result.ValidUntil > DateTime.Now;
-        }
-
-
+        
         private static Dictionary<EPlanet, Vertex<EPlanet, Provider>> AddVerticesAndArcsToGraph(
             TravelPrices travelPrices, AbstractGraph<EPlanet, Provider> graph, Func<Provider, double> arcWeightFunction)
         {

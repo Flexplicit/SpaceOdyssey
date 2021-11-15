@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using App.Domain.TravelModels;
+﻿using App.Domain.TravelModels;
 using Contracts.DAL.Base.Repositories;
 
 namespace Contracts.DAL.APP.Repositories

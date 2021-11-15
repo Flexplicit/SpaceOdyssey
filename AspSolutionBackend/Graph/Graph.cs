@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Graph.GraphModels;
 using Priority_Queue;
-using Utils;
 using static System.Int32;
 
 namespace Graph
@@ -17,7 +15,7 @@ namespace Graph
 
 
         private void DijkstraInitialization(IEnumerable<Vertex<TVertex, TArc>> vertices,
-            Vertex<TVertex, TArc> start, DateTime startTime)
+            Vertex<TVertex, TArc> start)
         {
             foreach (var v in vertices)
             {
@@ -26,7 +24,6 @@ namespace Graph
                 v.VPrev = null;
             }
 
-            start.CurrentTime = startTime;
             start.DistanceFromStartVertex = 0;
         }
 
@@ -59,8 +56,7 @@ namespace Graph
 
 
             permanentShortestPaths.Add(shortestPath1);
-
-            // return permanentShortestPaths;
+            
             var candidatePaths = new List<List<Arc<TVertex, TArc>>>();
 
 
@@ -117,11 +113,12 @@ namespace Graph
         /// </summary>
         /// <param name="from">From vertex which will be added as the first vertex.</param>
         /// <param name="to">To vertex where we will be traveling to.</param>
+        /// <param name="start">Starting time from where we search for future paths</param>
         public List<Arc<TVertex, TArc>> CustomDijkstraPathFinder(Vertex<TVertex, TArc> from, Vertex<TVertex, TArc> to,
             DateTime start)
         {
             var vertices = GetAllVertices();
-            DijkstraInitialization(vertices, from, start);
+            DijkstraInitialization(vertices, from);
 
             var pq = new FastPriorityQueue<Vertex<TVertex, TArc>>(VertexCount);
             foreach (var ver in vertices)
@@ -193,10 +190,11 @@ namespace Graph
                 }
             }
 
-            return extractPathsFromResult(from, to);
+            return ExtractPathsFromResult(from, to);
         }
 
-        private List<Arc<TVertex, TArc>> extractPathsFromResult(Vertex<TVertex, TArc> @from, Vertex<TVertex, TArc> to)
+        private static List<Arc<TVertex, TArc>> ExtractPathsFromResult(Vertex<TVertex, TArc> @from,
+            Vertex<TVertex, TArc> to)
         {
             var arcs = new List<Arc<TVertex, TArc>>();
 
@@ -210,80 +208,6 @@ namespace Graph
 
             arcs.Reverse();
             return arcs;
-        }
-
-        private void DijkstraPreparation(List<Vertex<TVertex, TArc>> vertices)
-        {
-            InjectVerticesWithInfiniteData(vertices);
-            First!.DistanceFromStartVertex = 0;
-        }
-
-        private static void InjectVerticesWithInfiniteData(List<Vertex<TVertex, TArc>> vertices)
-            => vertices.ForEach(vertex => vertex.DistanceFromStartVertex = MaxValue / 2);
-
-
-        /// <summary>
-        /// Finds the all the paths from one node from to to node and returns a arc list with the paths.
-        /// </summary>
-        /// <param name="from">From vertex which will be added as the first vertex.</param>
-        /// <param name="to">To vertex where we will be traveling to.</param>
-        public List<List<Arc<TVertex, TArc>>> GetArcDepthFirstSearch(Vertex<TVertex, TArc> from,
-            Vertex<TVertex, TArc> to)
-        {
-            var originVertex = GetVertexById(@from.Id);
-            if (originVertex != null)
-            {
-                base.AddVertexToFirst(originVertex);
-            }
-
-            if (First == null) return new List<List<Arc<TVertex, TArc>>>();
-
-            var vertexPathList = new List<Vertex<TVertex, TArc>>();
-            var arcResultPath = new List<List<Arc<TVertex, TArc>>>();
-
-
-            vertexPathList.Add(First);
-
-            DepthFirstSearchUtils(First, to, vertexPathList, arcResultPath,
-                new List<Arc<TVertex, TArc>>());
-            return arcResultPath;
-        }
-
-        private void DepthFirstSearchUtils(
-            Vertex<TVertex, TArc> from,
-            Vertex<TVertex, TArc> to,
-            List<Vertex<TVertex, TArc>> vertexPathList,
-            List<List<Arc<TVertex, TArc>>> arcResultPath,
-            List<Arc<TVertex, TArc>> currentArcs)
-        {
-            if (from.Id == to.Id)
-            {
-                var newList = currentArcs.Select(x => x).ToList();
-                arcResultPath.Add(newList);
-                return;
-            }
-
-            from.Visited = true; // current node
-
-            var currentArc = from.GetLatestArc();
-
-            while (currentArc != null)
-            {
-                if (!currentArc.Target!.Visited)
-                {
-                    vertexPathList.Add(currentArc.Target);
-                    currentArcs.Add(currentArc);
-
-                    DepthFirstSearchUtils(currentArc.Target, to, vertexPathList, arcResultPath, currentArcs);
-
-                    vertexPathList.RemoveRangeWithoutSize(vertexPathList.IndexOf(to, 1));
-                    currentArcs.RemoveRangeWithoutSize(currentArcs.IndexOf(currentArc, 1));
-                }
-
-                currentArc = currentArc.Next;
-            }
-
-            from.Visited = false;
         }
     }
 }

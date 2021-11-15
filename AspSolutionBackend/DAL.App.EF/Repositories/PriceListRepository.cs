@@ -19,7 +19,11 @@ namespace DAL.App.EF.Repositories
 
 
 
-
+        public async Task<bool> IsTravelPriceValid(Guid travelPriceId)
+        {
+            var result = await FirstOrDefaultAsync(travelPriceId);
+            return result != null && result.ValidUntil > DateTime.Now;
+        }
 
         private async Task<TravelPrices> RequestAndAddNewTravelPrices()
         {

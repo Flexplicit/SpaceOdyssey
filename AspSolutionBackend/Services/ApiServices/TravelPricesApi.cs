@@ -11,7 +11,7 @@ using Utils;
 
 namespace Services.ApiServices
 {
-    public class TravelPricesApi
+    public static class TravelPricesApi
     {
         private const string BaseUrl = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/";
         private const string TravelUrl = BaseUrl + "/TravelPrices/";
@@ -29,11 +29,10 @@ namespace Services.ApiServices
 
             var responseJson = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
 
-
-            return DeserializeStreamAsync<TravelPrices>(responseJson);
+            return DeserializeWithIsoDates<TravelPrices>(responseJson);
         }
 
-        private static T DeserializeStreamAsync<T>(string responseJson)
+        private static T DeserializeWithIsoDates<T>(string responseJson)
         {
             JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true };
             jsonOptions.Converters.Add(new DateTimeConverterUsingDateTimeParse());

@@ -38,8 +38,8 @@ namespace DAL.App.EF.Repositories
 
         private static void AddPriceAndTravelTimeFields(Reservation? res)
         {
-            res!.TotalQuotedPrice = res.RouteInfoData.Sum(x => x.Provider!.Price);
-            res.TotalQuotedTravelTimeInMinutes = res.RouteInfoData.Sum(route =>
+            res!.TotalQuotedPrice = res.RouteInfoData!.Sum(x => x.Provider!.Price);
+            res.TotalQuotedTravelTimeInMinutes = res.RouteInfoData!.Sum(route =>
                 DateUtils.CalculateHoursBetweenDates(route.Provider!.FlightStart, route.Provider.FlightEnd));
         }
 

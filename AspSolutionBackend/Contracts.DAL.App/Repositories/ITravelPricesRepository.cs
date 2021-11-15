@@ -17,6 +17,7 @@ namespace Contracts.DAL.App.Repositories
 
     public interface ITravelPricesRepository : IBaseRepository<TravelPrices>
     {
+        Task<bool> IsTravelPriceValid(Guid travelPriceId);
     }
 
     public interface ICustomTravelPricesRepository : ITravelPricesRepository

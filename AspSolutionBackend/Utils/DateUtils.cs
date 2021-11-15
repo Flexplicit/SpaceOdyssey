@@ -13,5 +13,14 @@ namespace Utils
         {
             return (end - start).TotalSeconds;
         }
+        public static double CalculateMillisecondsBetweenDates(DateTime start, DateTime end)
+        {
+            return Math.Abs((end - start).TotalMilliseconds);
+        }
+
+        public static double MillisecondsToMinutes(double ms)
+        {
+            return (ms / 1000)/60;
+        }
     }
 }

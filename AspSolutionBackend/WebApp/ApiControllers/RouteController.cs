@@ -47,7 +47,7 @@ namespace WebApp.ApiControllers
             var date = DateTime.Parse(startDate);
             var sortByEnum = Enum.Parse<ESortBy>(sortBy, true);
             var companies = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(companyJsonNameArray);
-
+            
             var travelData =
                 await _uow.TravelPrices.GetRouteTravelDataAsync(fromPlanet, toPlanet, date, sortByEnum, companies);
             var mappedData = travelData.Select(data => _travelDataMapper.Map(data));

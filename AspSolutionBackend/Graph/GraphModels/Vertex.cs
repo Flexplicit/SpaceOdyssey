@@ -32,7 +32,5 @@ namespace Graph.GraphModels
         public Arc<TVertex, TArc>? GetLatestArc() => AdjacentArcs.Count == 0 ? null : AdjacentArcs[^1];
 
         public Arc<TVertex, TArc>? GetFirstArc() => AdjacentArcs.Count == 0 ? null : AdjacentArcs[0];
-
-        public DateTime CurrentTime { get; set; }
     }
 }

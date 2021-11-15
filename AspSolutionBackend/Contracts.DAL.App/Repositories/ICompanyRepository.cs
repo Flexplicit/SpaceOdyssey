@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using App.Domain.TravelModels;
 using Contracts.DAL.Base.Repositories;
 

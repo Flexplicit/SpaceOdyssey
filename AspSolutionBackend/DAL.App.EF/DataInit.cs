@@ -9,6 +9,7 @@ using App.Domain.TravelModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Services.ApiServices;
+using Utils;
 using Timer = System.Timers.Timer;
 
 namespace DAL.App.EF
@@ -70,18 +71,18 @@ namespace DAL.App.EF
 
         public static void UpdateData(IServiceProvider serviceProvider)
         {
-            var timer = new Timer(910000);
+            var timer = new Timer(30000);
             var autoEvent = new AutoResetEvent(true);
 
 
-            timer.Elapsed += new ElapsedEventHandler(async (_, e) => await OnTimedEvent(autoEvent, e, serviceProvider));
+            timer.Elapsed +=
+                new ElapsedEventHandler(async (sender, e) => { await OnTimedEvent(sender, e, serviceProvider); });
             timer.Start();
         }
 
-        private static async Task OnTimedEvent(object stateInfo, ElapsedEventArgs e, IServiceProvider services)
+        private static async Task OnTimedEvent(object sender, ElapsedEventArgs e, IServiceProvider services)
         {
-            // AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
-            // autoEvent.Set();
+            var timer = (Timer)sender;
             using var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
             await using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
             if (ctx == null) return;
@@ -101,16 +102,18 @@ namespace DAL.App.EF
                 if (DateTime.Now > latestPriceList.ValidUntil)
                 {
                     Console.WriteLine("----Updating Database----");
-                    var res = await SeedData(ctx);
+                    latestPriceList = await SeedData(ctx);
                     Console.WriteLine("----Database database seeded----");
-
-                    // change timer to new date
                 }
             }
             else
             {
-                await SeedData(ctx);
+                latestPriceList = await SeedData(ctx);
             }
+
+            var timeTillNextUpdateInMillis = DateUtils.CalculateMillisecondsBetweenDates(DateTime.Now, latestPriceList.ValidUntil);
+            timer.Interval = timeTillNextUpdateInMillis + 5000; // 5 extra seconds just in case
+            Console.WriteLine($"Next update in {DateUtils.MillisecondsToMinutes(timeTillNextUpdateInMillis)} minutes.");
         }
 
         private static async Task<TravelPrices> GetTravelPriceWithAllPaths(Guid id, AppDbContext ctx)
