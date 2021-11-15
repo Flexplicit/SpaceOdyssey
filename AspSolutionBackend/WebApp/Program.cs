@@ -1,8 +1,10 @@
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Utils;
 
 namespace WebApp
 {
@@ -10,7 +12,9 @@ namespace WebApp
     {
         public static void Main(string[] args)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en");
+            Console.WriteLine(DateConvertors.GetDateTimeEstoniaNow());
+
+
             Console.WriteLine(DateTime.Now);
             CreateHostBuilder(args).Build().Run();
         }

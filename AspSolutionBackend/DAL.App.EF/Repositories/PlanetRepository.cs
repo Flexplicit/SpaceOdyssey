@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using App.Domain.TravelModels;
 using App.Domain.TravelModels.Enums;
 using Contracts.DAL.APP.Repositories;
 using DAL.Base.EF.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {

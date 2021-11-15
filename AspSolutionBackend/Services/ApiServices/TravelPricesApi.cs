@@ -1,12 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using App.Domain.TravelModels;
-using Newtonsoft.Json.Converters;
 using Utils;
 
 namespace Services.ApiServices

@@ -6,6 +6,7 @@ using Contracts.DAL.App.Repositories;
 using DAL.Base.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Services.ApiServices;
+using Utils;
 using DomainDTO = App.Domain.TravelModels;
 
 namespace DAL.App.EF.Repositories
@@ -22,7 +23,7 @@ namespace DAL.App.EF.Repositories
         public async Task<bool> IsTravelPriceValid(Guid travelPriceId)
         {
             var result = await FirstOrDefaultAsync(travelPriceId);
-            return result != null && result.ValidUntil > DateTime.Now;
+            return result != null && result.ValidUntil >DateConvertors.GetDateTimeEstoniaNow();
         }
 
         private async Task<TravelPrices> RequestAndAddNewTravelPrices()
@@ -36,7 +37,7 @@ namespace DAL.App.EF.Repositories
         protected static async Task<TravelPrices?> QueryTravelData(IQueryable<TravelPrices> query, DateTime startDate)
         {
             return await query
-                .Where(priceList => priceList.ValidUntil > DateTime.Now)
+                .Where(priceList => priceList.ValidUntil > DateConvertors.GetDateTimeEstoniaNow())
                 .Include(travelPrice => travelPrice.Legs)
                 .ThenInclude(leg => leg.RouteInfo)
                 .ThenInclude(route => route!.From)

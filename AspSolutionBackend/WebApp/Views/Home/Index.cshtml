@@ -1,12 +1,13 @@
-﻿@{
+﻿@using Utils
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to Cosmos-Odyssey backend v1.0</h1>
+    <h1 class="display-4">Welcome to Cosmos-Odyssey backend v1.1</h1>
     <p>
         Current Date:
-        @DateTime.Now
+        @DateConvertors.GetDateTimeEstoniaNow()
     </p>
     <p>
         <a href="/swagger">Swagger API endpoints documentation</a>

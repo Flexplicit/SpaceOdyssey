@@ -26,9 +26,22 @@ namespace DAL.App.EF
             ctx.Database.Migrate();
         }
 
-        public static async Task<TravelPrices> SeedData(AppDbContext ctx)
+        public static async Task<TravelPrices> SeedData(AppDbContext ctx, List<TravelPrices>? currPrices = null)
         {
             var currentTravelPrice = await TravelPricesApi.GetCurrentTravelPrices();
+            if (currPrices != null)
+            {
+                foreach (var travelPrices in currPrices)
+                {
+                    if (travelPrices.Id == currentTravelPrice.Id) ;
+                    {
+                        travelPrices.ValidUntil = currentTravelPrice.ValidUntil;
+                        await RemoveLastPriceList(ctx, await GetTravelPriceWithAllPaths(travelPrices.Id, ctx));
+                        break;
+                    }
+                }
+            }
+
             var distinctCompanies = ExtractDistinctCompaniesFromTravelPrices(currentTravelPrice);
 
 
@@ -76,7 +89,7 @@ namespace DAL.App.EF
 
 
             timer.Elapsed +=
-                new ElapsedEventHandler(async (sender, e) => { await OnTimedEvent(sender, e, serviceProvider); });
+                async (sender, e) => { await OnTimedEvent(sender, e, serviceProvider); };
             timer.Start();
         }
 
@@ -96,17 +109,21 @@ namespace DAL.App.EF
                 Console.WriteLine("----old Data deleted----");
             }
 
+            var priceLists = currentPriceList;
             var latestPriceList = currentPriceList.FirstOrDefault();
+
+
             if (latestPriceList != null)
             {
-                if (DateTime.Now > latestPriceList.ValidUntil)
+                if (DateConvertors.GetDateTimeEstoniaNow() > latestPriceList.ValidUntil)
                 {
                     Console.WriteLine("----Updating Database----");
-                    latestPriceList = await SeedData(ctx);
+                    latestPriceList = await SeedData(ctx, priceLists);
                     Console.WriteLine("----Database database seeded----");
                 }
-                Console.WriteLine(DateTime.Now);
-                Console.WriteLine(DateTime.Now > latestPriceList.ValidUntil);
+
+                Console.WriteLine(DateConvertors.GetDateTimeEstoniaNow());
+                Console.WriteLine(DateConvertors.GetDateTimeEstoniaNow() > latestPriceList.ValidUntil);
                 Console.WriteLine(latestPriceList.Id);
             }
             else
@@ -115,8 +132,12 @@ namespace DAL.App.EF
                 latestPriceList = await SeedData(ctx);
             }
 
-            
-            var timeTillNextUpdateInMillis = DateUtils.CalculateMillisecondsBetweenDates(DateTime.Now, latestPriceList.ValidUntil);
+            Console.WriteLine(DateConvertors.GetDateTimeEstoniaNow());
+            Console.WriteLine(latestPriceList.ValidUntil);
+
+            var timeTillNextUpdateInMillis =
+                DateUtils.CalculateMillisecondsBetweenDates(DateConvertors.GetDateTimeEstoniaNow(),
+                    latestPriceList.ValidUntil);
             timer.Interval = timeTillNextUpdateInMillis + 5000; // 5 extra seconds just in case
             Console.WriteLine($"Next update in {DateUtils.MillisecondsToMinutes(timeTillNextUpdateInMillis)} minutes.");
         }
