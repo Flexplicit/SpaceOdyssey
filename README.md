@@ -10,8 +10,7 @@ docker run -p 8060:70 -it --rm backend
 Running frontend
 
 ```
-cd  cd .\ReactSolutionFrontend\react-app
+cd .\ReactSolutionFrontend\react-app
 npm install
-npm run build
 npm start
 ```
