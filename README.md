@@ -1,5 +1,5 @@
-Do not change ports
-Running backend (runs on 8060 port 70)
+
+Running backend (runs on 8060 port 70, do not change ports)
 
 ```
 cd .\AspSolutionBackend\
