@@ -30,22 +30,7 @@ namespace DAL.App.EF
         public static async Task<TravelPrices> SeedData(AppDbContext ctx, List<TravelPrices>? currPrices = null)
         {
             var currentTravelPrice = await TravelPricesApi.GetCurrentTravelPrices();
-            if (currPrices != null)
-            {
-                foreach (var travelPrices in currPrices)
-                {
-                    if (travelPrices.Id == currentTravelPrice.Id) ;
-                    {
-                        travelPrices.ValidUntil = currentTravelPrice.ValidUntil;
-                        await RemoveLastPriceList(ctx, await GetTravelPriceWithAllPaths(travelPrices.Id, ctx));
-                        break;
-                    }
-                }
-            }
-
             var distinctCompanies = ExtractDistinctCompaniesFromTravelPrices(currentTravelPrice);
-
-
             RemoveCompaniesFromProviders(currentTravelPrice);
 
             var travelLegs = currentTravelPrice.Legs!;
@@ -85,12 +70,14 @@ namespace DAL.App.EF
 
         public static void UpdateData(IServiceProvider serviceProvider)
         {
+            
+            
+            
             var timer = new Timer(10000);
             var autoEvent = new AutoResetEvent(true);
 
 
-            timer.Elapsed +=
-                async (sender, e) => { await OnTimedEvent(sender, e, serviceProvider); };
+            timer.Elapsed += async (sender, e) => { await OnTimedEvent(sender, e, serviceProvider); };
             timer.Start();
         }
 
@@ -101,10 +88,11 @@ namespace DAL.App.EF
             await using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
             if (ctx == null) return;
 
-            var test = TravelPricesApi.GetCurrentTravelPrices().Result;
-            
+
             var currentPriceList = await GetCurrentPrices(ctx);
-            if (currentPriceList.Count == 11)
+            
+
+            if (currentPriceList.Count == 15)
             {
                 Console.WriteLine("----Deleting old data----");
                 var priceListToDelete = await GetTravelPriceWithAllPaths(currentPriceList[^1].Id, ctx);
