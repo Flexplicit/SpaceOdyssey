@@ -29,8 +29,8 @@ namespace DAL.App.EF.Repositories
                 .Include(reservation => reservation.RouteInfoData)
                 .ThenInclude(routeData => routeData.Provider)
                 .ThenInclude(provider => provider!.Company)
+                .Where(reservation => reservation.Id.Equals(id))
                 .FirstOrDefaultAsync();
-
             AddPriceAndTravelTimeFields(res);
 
             return res;
