@@ -56,7 +56,7 @@ const PlanetRoute = ({ data, onRouteClick }: IPlanetRouteProps) => {
             <span className="text-summaryleg-time">{convertStringToDateAndHours(data.routes?.[data.routes.length - 1].provider?.flightEnd)}</span>
           </div>
           <div className="row">
-            <span className="text-summaryleg-planet">{data.routes?.[0].to}</span>
+            <span className="text-summaryleg-planet">{data.routes?.[data.routes?.length - 1]?.to}</span>
           </div>
         </div>
         <div className="col">
